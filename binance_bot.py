@@ -2,6 +2,7 @@ from binance.client import Client
 from binance.enums import *
 import configparser
 import time
+import math
 import requests
 from threading import Thread
 from datetime import datetime
@@ -122,7 +123,11 @@ class BinanceBot:
             f.close()
 
     def get_price(self):
-        prices = self.binance.get_all_tickers()
+        try:
+            prices = self.binance.get_all_tickers()
+        except requests.exceptions.RequestException as e:
+            raise SystemExit(e)
+
         pair = self.config['token']['pair']
         for asset in prices:
             if asset['symbol'] == pair:
@@ -163,46 +168,66 @@ class BinanceBot:
             f.write(str(price))
             f.close()
 
+    def round_step_size(self, quantity, step_size):
+        print("step_size: " + str(step_size))
+        precision = int(round(-math.log(float(step_size), 10), 0))
+        return float(round(float(quantity), precision))
+
+    def floor_step_size(self, quantity, step_size):
+      precision = int(round(-math.log(step_size, 10), 0))
+      return int(quantity*(10**precision)) / (10**precision)
+
     def sell_order(self, amount: float = None, price: float = None):
         if amount and price:
-            rounded = (float(amount) // float(self.pair_step_size)) * float(self.pair_step_size)
+            rounded = self.floor_step_size(float(amount), float(self.pair_step_size))
             if self.order_testmode == 1:
                 self.output(level="warn", text="Test sell-order triggered", telegram=False, log=False)
             else:
-                order = self.binance.create_order(
-                    symbol=self.config['token']['pair'],
-                    side=SIDE_SELL,
-                    type=ORDER_TYPE_LIMIT,
-                    timeInForce=TIME_IN_FORCE_GTC,
-                    newOrderRespType=ORDER_RESP_TYPE_FULL,
-                    quantity=rounded,
-                    price=price)
-                if order:
-                    if order['status'] == 'FILLED':
+                try:
+                    order = self.binance.create_order(
+                        symbol=self.config['token']['pair'],
+                        side=SIDE_SELL,
+                        type=ORDER_TYPE_LIMIT,
+                        timeInForce=TIME_IN_FORCE_GTC,
+                        newOrderRespType=ORDER_RESP_TYPE_FULL,
+                        quantity=rounded,
+                        price=price)
+                    if order:
+                        print(str(order))
+                        #if order['status'] == 'FILLED':
                         os.remove("binance_bot.data")
                         return True
+                except requests.exceptions.RequestException as e:  
+                    raise SystemExit(e)
 
     def buy_order(self, amount: float = None):
         if amount:
             rounded = (float(amount) // float(self.pair_step_size)) * float(self.pair_step_size)
+
             if self.order_testmode == 1:
                 self.output(level="warn", text="Test buy-order triggered", telegram=False, log=False)
             else:
-                order = self.binance.order_market_buy(symbol=self.config['token']['pair'], quoteOrderQty=rounded, newOrderRespType=ORDER_RESP_TYPE_FULL)
-                if order:
-                    if order['status'] == 'FILLED':
-                        if order['fills']:
-                            for fill in order['fills']:
-                                buy_price = fill['price']
-                                self.save_buy_price(buy_price)
-                                return True
+                try:
+                    order = self.binance.order_market_buy(symbol=self.config['token']['pair'], quoteOrderQty=rounded, newOrderRespType=ORDER_RESP_TYPE_FULL)
+                    if order:
+                        if order['status'] == 'FILLED':
+                            if order['fills']:
+                                for fill in order['fills']:
+                                    buy_price = fill['price']
+                                    self.save_buy_price(buy_price)
+                                    return True
+                except requests.exceptions.RequestException as e:
+                    raise SystemExit(e)
 
     def cancel_open_orders(self):
-        orders = self.binance.get_open_orders(symbol=self.config['token']['pair'])
-        if orders:
-            for o in orders:
-                if o['status'] != 'FILLED':
-                    self.binance.cancel_order(symbol=self.config['token']['pair'], orderId=o['orderId'])
+        try:
+            orders = self.binance.get_open_orders(symbol=self.config['token']['pair'])
+            if orders:
+                for o in orders:
+                    if o['status'] != 'FILLED':
+                        self.binance.cancel_order(symbol=self.config['token']['pair'], orderId=o['orderId'])
+        except requests.exceptions.RequestException as e:
+            raise SystemExit(e)
 
     def run(self):
         # Set variables
@@ -219,8 +244,12 @@ class BinanceBot:
                 self.cancel_open_orders()
 
                 # Gather current token data
-                self.base_asset_balance = self.binance.get_asset_balance(asset=self.base_asset_name)
-                self.quote_asset_balance = self.binance.get_asset_balance(asset=self.quote_asset_name)
+                try:
+                    self.base_asset_balance = self.binance.get_asset_balance(asset=self.base_asset_name)
+                    self.quote_asset_balance = self.binance.get_asset_balance(asset=self.quote_asset_name)
+                except requests.exceptions.RequestException as e:
+                    raise SystemExit(e)
+
                 self.base_asset_balance_precision = "{:0.0{}f}".format(float(self.base_asset_balance['free']), int(self.base_asset_precision))
                 self.quote_asset_balance_precision = "{:0.0{}f}".format(float(self.quote_asset_balance['free']), int(self.quote_asset_precision))
                 self.base_asset_price = float(self.get_price())
@@ -258,7 +287,6 @@ class BinanceBot:
                 # Print status messages
                 self.status_message()
 
-                # Sell Logic
                 if self.base_asset_buy_price:
                     if self.base_asset_take_profit_price < self.base_asset_price and self.base_asset_balance['free'] > self.pair_min_quantity:
                         sell_order = self.sell_order(self.base_asset_balance['free'], self.base_asset_price)
@@ -276,9 +304,12 @@ class BinanceBot:
                 elif self.quote_asset_balance['free'] > self.pair_min_quantity and self.buy_counter >= self.order_buy_trigger and self.base_asset_price < self.order_max_price:
                     buy_order = self.buy_order(float(self.quote_asset_balance_precision))
                     if buy_order:
-                        new_base_asset_balance = self.binance.get_asset_balance(asset=self.base_asset_name)
-                        #self.output(level="info", text=Fore.GREEN + "Bought " + Style.RESET_ALL + str(new_base_asset_balance) + " " + self.base_asset_name + " for " + str(self.quote_asset_balance_precision) + " " + self.quote_asset_name, telegram=True, log=True)
-                        print("not buying right now")
+                        try:
+                            new_base_asset_balance = self.binance.get_asset_balance(asset=self.base_asset_name)
+                        except requests.exceptions.RequestException as e:
+                            raise SystemExit(e)
+
+                        self.output(level="info", text=Fore.GREEN + "Bought " + Style.RESET_ALL + str(new_base_asset_balance) + " " + self.base_asset_name + " for " + str(self.quote_asset_balance_precision) + " " + self.quote_asset_name, telegram=True, log=True)
 
                 # End the loop
                 self.base_asset_old_price = self.base_asset_price
