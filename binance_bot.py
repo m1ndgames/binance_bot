@@ -23,6 +23,7 @@ class BinanceBot:
         self.base_asset_balance_precision = None
         self.base_asset_price = None
         self.base_asset_sell_price = None
+        self.base_asset_previous_sell_price = None
         self.base_asset_take_profit_price = None
         self.base_asset_buy_price = None
         self.base_asset_old_price = None
@@ -38,6 +39,7 @@ class BinanceBot:
         self.pair_step_size = None
         self.pair_min_ordersize = None
         self.order_change_limit = None
+        self.order_redcandle_size = None
         self.order_minimum_profit = None
         self.order_take_profit = None
         self.order_max_price = None
@@ -49,8 +51,12 @@ class BinanceBot:
         self.telegram_channel_id = None
         self.countdown_timer = None
         self.telegram = None
+        self.stop_threads = False
         self.sell_counter = 0
         self.buy_counter = 0
+        self.bad_return_codes = [
+            'Connection Refused.',
+        ]
 
     def setup(self):
         self.config.read('binance_bot.cfg')
@@ -81,22 +87,28 @@ class BinanceBot:
         self.order_buy_trigger = int(self.config['base']['buy_trigger'])
         self.order_sell_trigger = int(self.config['base']['sell_trigger'])
         self.order_testmode = int(self.config['base']['testmode'])
+        self.order_redcandle_size = float(self.config['base']['redcandle_size'])
 
         self.telegram_apikey = self.config['telegram']['apikey']
         self.telegram_channel_id = self.config['telegram']['channel_id']
 
         # Start timer thread
-        timer_thread = Thread(target=self.timer)
+        timer_thread = Thread(target=self.timer, daemon=True, name='timer')
         timer_thread.start()
 
+        # Start bot thread
+        bot_thread = Thread(target=self.bot, daemon=True, name='bot')
+        bot_thread.start()
+
     def timer(self):
-        countdown = self.order_timer
-        while countdown > -1:
-            time.sleep(1)
-            countdown -= 1
-            if countdown == -1:
-                countdown = self.order_timer
-            self.countdown_timer = countdown
+        while not self.stop_threads:
+            countdown = self.order_timer
+            while countdown > -1:
+                time.sleep(1)
+                countdown -= 1
+                if countdown == -1:
+                    countdown = self.order_timer
+                self.countdown_timer = countdown
 
     def output(self, level: str = "info", text: str = None, telegram: bool = False, log: bool = False):
         if level == 'info':
@@ -123,10 +135,19 @@ class BinanceBot:
             f.close()
 
     def get_price(self):
+        base_asset_balance = self.binance.get_asset_balance(asset=self.base_asset_name)
+        if base_asset_balance in self.bad_return_codes:
+            print("base_asset_balance - Restart!\n")
+        #else:
+        #    self.base_asset_balance = base_asset_balance
+
         try:
             prices = self.binance.get_all_tickers()
         except requests.exceptions.RequestException as e:
             raise SystemExit(e)
+
+        if prices[0] in self.bad_return_codes:
+            print("prices[0] - Restart!\n")
 
         pair = self.config['token']['pair']
         for asset in prices:
@@ -147,6 +168,8 @@ class BinanceBot:
 
         if self.base_asset_buy_price:
             asset_line = asset_line + "\tBuy Price: " + str(self.base_asset_buy_price) + " - Sell Price: " + str(self.base_asset_sell_price) + " - Take profit at: " + str(self.base_asset_take_profit_price)
+        if self.base_asset_previous_sell_price:
+            asset_line = asset_line + "\tBuying below " + str(self.base_asset_previous_sell_price - self.order_redcandle_size)
 
         if self.sell_counter != 0 and self.base_asset_buy_price:
             price_line = price_line + "\tSell Counter: " + str(self.sell_counter) + "/" + str(self.order_sell_trigger)
@@ -157,19 +180,30 @@ class BinanceBot:
         self.output(text=price_line, telegram=False, log=False)
 
     def read_buy_price(self):
-        f = open("binance_bot.data", "r")
+        f = open("binance_bot.buydata", "r")
         line = f.readline()
         f.close()
         return float(line)
 
     def save_buy_price(self, price: float = None):
         if price:
-            f = open("binance_bot.data", "w")
+            f = open("binance_bot.buydata", "w")
+            f.write(str(price))
+            f.close()
+
+    def read_sell_price(self):
+        f = open("binance_bot.selldata", "r")
+        line = f.readline()
+        f.close()
+        return float(line)
+
+    def save_sell_price(self, price: float = None):
+        if price:
+            f = open("binance_bot.selldata", "w")
             f.write(str(price))
             f.close()
 
     def round_step_size(self, quantity, step_size):
-        print("step_size: " + str(step_size))
         precision = int(round(-math.log(float(step_size), 10), 0))
         return float(round(float(quantity), precision))
 
@@ -194,10 +228,15 @@ class BinanceBot:
                         price=price)
                     if order:
                         print(str(order))
+                        #if order[0] in self.bad_return_codes:
+                        #    print("Restart!\n")
+
                         #if order['status'] == 'FILLED':
-                        os.remove("binance_bot.data")
+                        if os.path.isfile("binance_bot.buydata"):
+                            os.remove("binance_bot.buydata")
+                        self.save_sell_price(price)
                         return True
-                except requests.exceptions.RequestException as e:  
+                except requests.exceptions.RequestException as e:
                     raise SystemExit(e)
 
     def buy_order(self, amount: float = None):
@@ -210,11 +249,17 @@ class BinanceBot:
                 try:
                     order = self.binance.order_market_buy(symbol=self.config['token']['pair'], quoteOrderQty=rounded, newOrderRespType=ORDER_RESP_TYPE_FULL)
                     if order:
+                        print(str(order))
+                        #if order[0] in self.bad_return_codes:
+                        #    print("Restart!\n")
+
                         if order['status'] == 'FILLED':
                             if order['fills']:
                                 for fill in order['fills']:
                                     buy_price = fill['price']
                                     self.save_buy_price(buy_price)
+                                    if os.path.isfile("binance_bot.selldata"):
+                                        os.remove("binance_bot.selldata")
                                     return True
                 except requests.exceptions.RequestException as e:
                     raise SystemExit(e)
@@ -229,19 +274,11 @@ class BinanceBot:
         except requests.exceptions.RequestException as e:
             raise SystemExit(e)
 
-    def run(self):
-        # Set variables
-        self.setup()
-
-        # Show warning if testmode is active
-        if self.order_testmode == 1:
-            self.output(level="warn", text="Warning: Testmode is active - orders wont be processed.", telegram=False, log=False)
-
-        # Main loop
-        while 1:
+    def bot(self):
+        while not self.stop_threads:
             if self.countdown_timer == 0:
                 # Check open Orders which have not been processed
-                self.cancel_open_orders()
+                #self.cancel_open_orders()
 
                 # Gather current token data
                 try:
@@ -262,10 +299,16 @@ class BinanceBot:
                     self.base_asset_change = self.base_asset_price - self.base_asset_old_price
 
                 # Check if we have a buy price
-                if os.path.isfile('binance_bot.data'):
+                if os.path.isfile('binance_bot.buydata'):
                     self.base_asset_buy_price = self.read_buy_price()
                 else:
                     self.base_asset_buy_price = None
+
+                # Check if we have a previous sell price
+                if os.path.isfile('binance_bot.selldata'):
+                    self.base_asset_previous_sell_price = self.read_sell_price()
+                else:
+                    self.base_asset_previous_sell_price = None
 
                 # Define Sell/Take-Profit Prices
                 if self.base_asset_buy_price:
@@ -287,6 +330,7 @@ class BinanceBot:
                 # Print status messages
                 self.status_message()
 
+                # Sell Logic
                 if self.base_asset_buy_price:
                     if self.base_asset_take_profit_price < self.base_asset_price and self.base_asset_balance['free'] > self.pair_min_quantity:
                         sell_order = self.sell_order(self.base_asset_balance['free'], self.base_asset_price)
@@ -302,16 +346,38 @@ class BinanceBot:
 
                 #  Buy Logic
                 elif self.quote_asset_balance['free'] > self.pair_min_quantity and self.buy_counter >= self.order_buy_trigger and self.base_asset_price < self.order_max_price:
-                    buy_order = self.buy_order(float(self.quote_asset_balance_precision))
-                    if buy_order:
-                        try:
-                            new_base_asset_balance = self.binance.get_asset_balance(asset=self.base_asset_name)
-                        except requests.exceptions.RequestException as e:
-                            raise SystemExit(e)
+                    if self.base_asset_previous_sell_price:
+                        if self.base_asset_price < (self.base_asset_previous_sell_price - self.order_redcandle_size):
+                            buy_order = self.buy_order(float(self.quote_asset_balance_precision))
+                            if buy_order:
+                                try:
+                                    new_base_asset_balance = self.binance.get_asset_balance(asset=self.base_asset_name)
+                                except requests.exceptions.RequestException as e:
+                                    raise SystemExit(e)
 
-                        self.output(level="info", text=Fore.GREEN + "Bought " + Style.RESET_ALL + str(new_base_asset_balance) + " " + self.base_asset_name + " for " + str(self.quote_asset_balance_precision) + " " + self.quote_asset_name, telegram=True, log=True)
+                                self.output(level="info", text=Fore.GREEN + "Bought " + Style.RESET_ALL + str(new_base_asset_balance) + " " + self.base_asset_name + " for " + str(self.quote_asset_balance_precision) + " " + self.quote_asset_name, telegram=True, log=True)
+                    else:
+                        buy_order = self.buy_order(float(self.quote_asset_balance_precision))
+                        if buy_order:
+                           try:
+                               new_base_asset_balance = self.binance.get_asset_balance(asset=self.base_asset_name)
+                           except requests.exceptions.RequestException as e:
+                                raise SystemExit(e)
+
+                           self.output(level="info", text=Fore.GREEN + "Bought " + Style.RESET_ALL + str(new_base_asset_balance) + " " + self.base_asset_name + " for " + str(self.quote_asset_balance_precision) + " " + self.quote_asset_name, telegram=True, log=True)
 
                 # End the loop
                 self.base_asset_old_price = self.base_asset_price
 
+            time.sleep(1)
+
+    def run(self):
+        # Set variables
+        self.setup()
+
+        # Show warning if testmode is active
+        if self.order_testmode == 1:
+            self.output(level="warn", text="Warning: Testmode is active - orders wont be processed.", telegram=False, log=False)
+
+        while True:
             time.sleep(1)
