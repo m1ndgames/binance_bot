@@ -54,6 +54,8 @@ class BinanceBot:
         self.stop_threads = False
         self.sell_counter = 0
         self.buy_counter = 0
+        self.timer_thread = None
+        self.bot_thread = None
         self.bad_return_codes = [
             'Connection Refused.',
         ]
@@ -93,12 +95,12 @@ class BinanceBot:
         self.telegram_channel_id = self.config['telegram']['channel_id']
 
         # Start timer thread
-        timer_thread = Thread(target=self.timer, daemon=True, name='timer')
-        timer_thread.start()
+        self.timer_thread = Thread(target=self.timer, daemon=True, name='timer')
+        self.timer_thread.start()
 
         # Start bot thread
-        bot_thread = Thread(target=self.bot, daemon=True, name='bot')
-        bot_thread.start()
+        self.bot_thread = Thread(target=self.bot, daemon=True, name='bot')
+        self.bot_thread.start()
 
     def timer(self):
         while not self.stop_threads:
@@ -381,3 +383,12 @@ class BinanceBot:
 
         while True:
             time.sleep(1)
+
+            # Restart crashed threads
+            if not self.bot_thread.is_alive():
+                self.bot_thread = Thread(target=self.bot, daemon=True, name='bot')
+                self.bot_thread.start()
+
+            if not self.timer_thread.is_alive():
+                self.timer_thread = Thread(target=self.timer, daemon=True, name='timer')
+                self.timer_thread.start()
