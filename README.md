@@ -1,9 +1,6 @@
 # binance_bot
-Another binance bot...
-
-This was created just for fun, to see how well a bot can do with a little money running 24/7.
-
-Use at your own risk!
+Another binance bot that watches a configured crypto pair and buys/sells according to price changes which can be freely
+configured. The buy/sell actions are sent to a configurable Telegram channel.
 
 # Config
 ````
@@ -30,3 +27,13 @@ apikey_private = <binance private api key>
 [telegram]
 apikey     = <telegram api key>
 channel_id = <telegram channel id>
+````
+
+# Estimated income
+With about 350 USDT the bot currently makes me around 5-10$ each trade, but please keep in mind that this is highly
+dependent on the current market. A Coin with a lot of fluctuation up and down works best. As usual: Do your research and
+never invest more than you are willing to lose.
+
+# Donations
+If you like my work and want to send me some coins along, please use this ADA address:
+``addr1q8rt5wfhnuqtq74h5e9979nrz3rjsp9wdn7sdu5qhr992pcg7ts5v7g4suczxcku4385nm546hwaag853pm4ykf07ghqeakkk0``
