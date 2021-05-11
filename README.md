@@ -5,9 +5,9 @@ configured. The buy/sell actions are sent to a configurable Telegram channel.
 # Config
 ````
 [token]
-pair     = ADAUSDT          # The Pair (for example BTCUSDT)
-token    = ADA              # Token (BTC)
-currency = USDT             # Currency (USDT) - Can also be ETH or whatever pair is used.
+pair           = ADAUSDT    # The Pair (for example BTCUSDT)
+token          = ADA        # Token (BTC)
+currency       = USDT       # Currency (USDT) - Can also be ETH or whatever pair is used.
 
 [base]
 change_limit   = <FLOAT>    # If the coin prices changes by this amount, the buy/sell counter is raised.
@@ -21,13 +21,32 @@ sell_trigger   = <INT>      # How many times a coin value should go up (change_l
 testmode       = <0|1>      # If enabled, no orders are processed.
 
 [binance]
-apikey_public = <binance public api key>
-apikey_private = <binance private api key>
+apikey         = <binance api key>
+apikey_secret  = <binance secret api key>
 
 [telegram]
-apikey     = <telegram api key>
-channel_id = <telegram channel id>
+active         = true
+apikey         = <telegram api hash>
+channel_id     = <telegram channel id>
 ````
+
+# Telegram Setup
+If configured, you need to create a Telegram channel and application.
+
+* Create the application: https://my.telegram.org/apps
+* The api_hash is your api key
+* Create a Telegram channel
+* Receive the channel id like this:
+````
+    Go to https://web.telegram.org/
+    Click on your channel
+    Look at the URL and find the part that looks like c12112121212_17878787878787878
+    Remove the underscore and after c12112121212
+    Remove the prefixed letter 12112121212
+    Prefix with a -100 so -10012112121212
+    That's your channel id.
+````
+* Invite the bot to your channel
 
 # Estimated income
 With about 350 USDT the bot currently makes me around 5-10$ each trade, but please keep in mind that this is highly

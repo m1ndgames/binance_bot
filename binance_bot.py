@@ -47,6 +47,7 @@ class BinanceBot:
         self.order_buy_trigger = None
         self.order_sell_trigger = None
         self.order_testmode = None
+        self.telegram_active = None
         self.telegram_apikey = None
         self.telegram_channel_id = None
         self.countdown_timer = None
@@ -62,7 +63,7 @@ class BinanceBot:
 
     def setup(self):
         self.config.read('binance_bot.cfg')
-        self.binance = Client(self.config['binance']['apikey_public'], self.config['binance']['apikey_private'])
+        self.binance = Client(self.config['binance']['apikey'], self.config['binance']['apikey_secret'])
         self.trading_pair_info = self.binance.get_symbol_info(self.config['token']['pair'])
 
         self.base_asset_name = self.trading_pair_info['baseAsset']
@@ -91,6 +92,7 @@ class BinanceBot:
         self.order_testmode = int(self.config['base']['testmode'])
         self.order_redcandle_size = float(self.config['base']['redcandle_size'])
 
+        self.telegram_active = self.config['telegram']['apikey']
         self.telegram_apikey = self.config['telegram']['apikey']
         self.telegram_channel_id = self.config['telegram']['channel_id']
 
@@ -128,8 +130,9 @@ class BinanceBot:
 
         print(color + str(time_string) + Style.RESET_ALL + " - " + str(text) + Style.RESET_ALL)
 
-        if telegram:
-            requests.get("https://api.telegram.org/bot" + str(self.telegram_apikey) + "/sendMessage?chat_id=" + str(self.telegram_channel_id) + "&text=" + str(text))
+        if self.telegram_active == 'true':
+            if telegram:
+                requests.get("https://api.telegram.org/bot" + str(self.telegram_apikey) + "/sendMessage?chat_id=" + str(self.telegram_channel_id) + "&text=" + str(text))
 
         if log:
             f = open("binance_bot.log", "a")
