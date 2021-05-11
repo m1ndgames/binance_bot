@@ -26,15 +26,14 @@ apikey_secret  = <binance secret api key>
 
 [telegram]
 active         = true
-apikey         = <telegram api hash>
+apikey         = <bot token>
 channel_id     = <telegram channel id>
 ````
 
 # Telegram Setup
-If configured, you need to create a Telegram channel and application.
+If configured, you need to create a Telegram channel and a bot.
 
 * Create the application: https://my.telegram.org/apps
-* The api_hash is your api key
 * Create a Telegram channel
 * Receive the channel id like this:
 ````
@@ -46,13 +45,8 @@ If configured, you need to create a Telegram channel and application.
     Prefix with a -100 so -10012112121212
     That's your channel id.
 ````
-* Create a bot with Botfather (https://core.telegram.org/bots)
+* Create a bot with Botfather (https://core.telegram.org/bots) and receive the bot token
 * Invite the bot to your channel
-
-# Estimated income
-With about 350 USDT the bot currently makes me around 5-10$ each trade, but please keep in mind that this is highly
-dependent on the current market. A Coin with a lot of fluctuation up and down works best. As usual: Do your research and
-never invest more than you are willing to lose.
 
 # Donations
 If you like my work and want to send me some coins along, please use this ADA address:
