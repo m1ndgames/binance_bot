@@ -47,6 +47,7 @@ class BinanceBot:
         self.order_buy_trigger = None
         self.order_sell_trigger = None
         self.order_testmode = None
+        self.telegram_active = None
         self.telegram_apikey = None
         self.telegram_channel_id = None
         self.countdown_timer = None
@@ -62,7 +63,7 @@ class BinanceBot:
 
     def setup(self):
         self.config.read('binance_bot.cfg')
-        self.binance = Client(self.config['binance']['apikey_public'], self.config['binance']['apikey_private'])
+        self.binance = Client(self.config['binance']['apikey'], self.config['binance']['apikey_secret'])
         self.trading_pair_info = self.binance.get_symbol_info(self.config['token']['pair'])
 
         self.base_asset_name = self.trading_pair_info['baseAsset']
@@ -91,6 +92,7 @@ class BinanceBot:
         self.order_testmode = int(self.config['base']['testmode'])
         self.order_redcandle_size = float(self.config['base']['redcandle_size'])
 
+        self.telegram_active = self.config['telegram']['active']
         self.telegram_apikey = self.config['telegram']['apikey']
         self.telegram_channel_id = self.config['telegram']['channel_id']
 
@@ -113,6 +115,9 @@ class BinanceBot:
                 self.countdown_timer = countdown
 
     def output(self, level: str = "info", text: str = None, telegram: bool = False, log: bool = False):
+        now = datetime.now()
+        time_string = now.strftime("%d/%m/%Y %H:%M:%S")
+
         if level == 'info':
             color = Fore.GREEN
         elif level == 'warn':
@@ -123,13 +128,11 @@ class BinanceBot:
             log = True
             telegram = True
 
-        now = datetime.now()
-        time_string = now.strftime("%d/%m/%Y %H:%M:%S")
-
         print(color + str(time_string) + Style.RESET_ALL + " - " + str(text) + Style.RESET_ALL)
 
-        if telegram:
-            requests.get("https://api.telegram.org/bot" + str(self.telegram_apikey) + "/sendMessage?chat_id=" + str(self.telegram_channel_id) + "&text=" + str(text))
+        if self.telegram_active == 'true':
+            if telegram:
+                requests.get("https://api.telegram.org/bot" + str(self.telegram_apikey) + "/sendMessage?chat_id=" + str(self.telegram_channel_id) + "&text=" + str(text))
 
         if log:
             f = open("binance_bot.log", "a")
@@ -246,7 +249,7 @@ class BinanceBot:
             rounded = (float(amount) // float(self.pair_step_size)) * float(self.pair_step_size)
 
             if self.order_testmode == 1:
-                self.output(level="warn", text="Test buy-order triggered", telegram=False, log=False)
+                self.output(level="warn", text="Test buy-order triggered", telegram=True, log=False)
             else:
                 try:
                     order = self.binance.order_market_buy(symbol=self.config['token']['pair'], quoteOrderQty=rounded, newOrderRespType=ORDER_RESP_TYPE_FULL)
@@ -377,6 +380,8 @@ class BinanceBot:
         # Set variables
         self.setup()
 
+        self.output(level="info", text="binance_bot started", telegram=True, log=True)
+
         # Show warning if testmode is active
         if self.order_testmode == 1:
             self.output(level="warn", text="Warning: Testmode is active - orders wont be processed.", telegram=False, log=False)
@@ -386,6 +391,7 @@ class BinanceBot:
 
             # Restart crashed threads
             if not self.bot_thread.is_alive():
+                self.output(level="warn", text="binance_bot crashed - restarting thread", telegram=True, log=True)
                 self.bot_thread = Thread(target=self.bot, daemon=True, name='bot')
                 self.bot_thread.start()
 
