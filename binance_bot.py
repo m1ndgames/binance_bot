@@ -92,7 +92,7 @@ class BinanceBot:
         self.order_testmode = int(self.config['base']['testmode'])
         self.order_redcandle_size = float(self.config['base']['redcandle_size'])
 
-        self.telegram_active = self.config['telegram']['apikey']
+        self.telegram_active = self.config['telegram']['active']
         self.telegram_apikey = self.config['telegram']['apikey']
         self.telegram_channel_id = self.config['telegram']['channel_id']
 
@@ -115,6 +115,9 @@ class BinanceBot:
                 self.countdown_timer = countdown
 
     def output(self, level: str = "info", text: str = None, telegram: bool = False, log: bool = False):
+        now = datetime.now()
+        time_string = now.strftime("%d/%m/%Y %H:%M:%S")
+
         if level == 'info':
             color = Fore.GREEN
         elif level == 'warn':
@@ -124,9 +127,6 @@ class BinanceBot:
             color = Fore.RED
             log = True
             telegram = True
-
-        now = datetime.now()
-        time_string = now.strftime("%d/%m/%Y %H:%M:%S")
 
         print(color + str(time_string) + Style.RESET_ALL + " - " + str(text) + Style.RESET_ALL)
 
@@ -249,7 +249,7 @@ class BinanceBot:
             rounded = (float(amount) // float(self.pair_step_size)) * float(self.pair_step_size)
 
             if self.order_testmode == 1:
-                self.output(level="warn", text="Test buy-order triggered", telegram=False, log=False)
+                self.output(level="warn", text="Test buy-order triggered", telegram=True, log=False)
             else:
                 try:
                     order = self.binance.order_market_buy(symbol=self.config['token']['pair'], quoteOrderQty=rounded, newOrderRespType=ORDER_RESP_TYPE_FULL)
@@ -380,6 +380,8 @@ class BinanceBot:
         # Set variables
         self.setup()
 
+        self.output(level="info", text="binance_bot started", telegram=True, log=True)
+
         # Show warning if testmode is active
         if self.order_testmode == 1:
             self.output(level="warn", text="Warning: Testmode is active - orders wont be processed.", telegram=False, log=False)
@@ -389,6 +391,7 @@ class BinanceBot:
 
             # Restart crashed threads
             if not self.bot_thread.is_alive():
+                self.output(level="warn", text="binance_bot crashed - restarting thread", telegram=True, log=True)
                 self.bot_thread = Thread(target=self.bot, daemon=True, name='bot')
                 self.bot_thread.start()
 
