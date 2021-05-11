@@ -46,7 +46,6 @@ If configured, you need to create a Telegram channel and application.
     Prefix with a -100 so -10012112121212
     That's your channel id.
 ````
-* Invite the bot to your channel
 
 # Estimated income
 With about 350 USDT the bot currently makes me around 5-10$ each trade, but please keep in mind that this is highly
