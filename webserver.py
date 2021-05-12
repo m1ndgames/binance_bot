@@ -16,7 +16,7 @@ class Webserver:
 
     @post('/saveconfig')
     def saveconfig(self):
-        msg = "Config saved succesfully"
+        msg = "Config saved successfully"
 
         pair = request.forms.get('pair')
         if not pair:
@@ -110,6 +110,7 @@ class Webserver:
         # Routes
         bottle.route("/")(web.index)
         bottle.route("/config")(web.config)
+        bottle.route("/saveconfig")(web.saveconfig)
         bottle.route("/stats")(web.stats)
 
         # Start Webserver
