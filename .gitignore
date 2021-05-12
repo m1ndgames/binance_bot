@@ -1,5 +1,6 @@
+misc.xml
+Project_Default.xml
+
 binance_bot.log
-binance_bot.data
 binance_bot.cfg
-binance_bot.buydata
-binance_bot.selldata
+binance_bot.sqlite
