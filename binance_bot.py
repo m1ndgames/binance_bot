@@ -1,7 +1,6 @@
-import random
-
 from binance.client import Client
 from binance.enums import *
+from webserver import Webserver
 import database
 import configparser
 import time
@@ -9,13 +8,15 @@ import math
 import requests
 from threading import Thread
 from datetime import datetime
-import os
 from colorama import init, Fore, Style
 init()
 
 
 class BinanceBot:
     def __init__(self):
+        super().__init__()
+        self.webserver = Webserver(self)
+
         # Init variables
         self.config = configparser.ConfigParser()
         self.binance = None
@@ -59,6 +60,7 @@ class BinanceBot:
         self.buy_counter = 0
         self.timer_thread = None
         self.bot_thread = None
+        self.webserver_thread = None
 
     def setup(self):
         self.config.read('binance_bot.cfg')
@@ -163,9 +165,9 @@ class BinanceBot:
         asset_line = "Wallet - " + self.base_asset_name + ": " + str(self.base_asset_balance_precision) + "\t" + self.quote_asset_name + ": " + self.quote_asset_balance_precision
         price_line = "Token  - Price: " + str(self.base_asset_price) + "\tChange: " + change_color + str(self.base_asset_change) + Style.RESET_ALL
 
-        if self.base_asset_buy_price:
+        if database.is_selling() == 1:
             asset_line = asset_line + "\tBuy Price: " + str(self.base_asset_buy_price) + " - Sell Price: " + str(self.base_asset_sell_price) + " - Take profit at: " + str(self.base_asset_take_profit_price)
-        if database.read_buy_barrier() != 0.0:
+        if database.read_buy_barrier() != 0.0 and not database.is_selling():
             asset_line = asset_line + "\tBuying below " + str(database.read_buy_barrier() - self.order_redcandle_size)
 
         if self.sell_counter != 0 and self.base_asset_buy_price:
@@ -308,7 +310,7 @@ class BinanceBot:
                 #  Buy Logic
                 else:
                     if self.quote_asset_balance['free'] > self.pair_min_quantity and self.buy_counter >= self.order_buy_trigger and self.base_asset_price < self.order_max_price:
-                        if self.base_asset_previous_sell_price:
+                        if database.read_last_sell_order_price():
                             if self.base_asset_price < (self.base_asset_previous_sell_price - self.order_redcandle_size):
                                 buy_order = self.buy_order(float(self.quote_asset_balance_precision))
                                 if buy_order:
@@ -343,6 +345,10 @@ class BinanceBot:
         if self.order_testmode == 1:
             self.output(level="warn", text="Warning: Testmode is active - orders wont be processed.", telegram=True, log=False)
 
+        # Start webserver
+        self.webserver_thread = Thread(target=self.webserver.start(), daemon=True, name='webserver')
+        self.webserver_thread.start()
+
         while True:
             time.sleep(1)
 
@@ -355,3 +361,7 @@ class BinanceBot:
             if not self.timer_thread.is_alive():
                 self.timer_thread = Thread(target=self.timer, daemon=True, name='timer')
                 self.timer_thread.start()
+
+            # Stop program and kill all threads when we stop the bottle webserver
+            if not self.webserver_thread.is_alive():
+                exit(0)
