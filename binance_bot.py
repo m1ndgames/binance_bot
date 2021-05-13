@@ -361,7 +361,7 @@ class BinanceBot:
                 else:
                     if self.quote_asset_balance['free'] > self.pair_min_quantity and self.buy_counter >= int(self.config['buy_trigger']) and self.base_asset_price < float(self.config['max_price']):
                         if self.database.read_last_sell_order_price():
-                            if self.base_asset_price < (self.base_asset_previous_sell_price - float(self.config['redcandle_size'])):
+                            if self.base_asset_price < (self.database.read_last_sell_order_price() - float(self.config['redcandle_size'])):
                                 buy_order = self.buy_order(float(self.quote_asset_balance_precision))
                                 if buy_order:
                                     try:

@@ -116,13 +116,13 @@ class DatabaseManager:
                                       ('pair', 'base_asset', 'quote_asset', 'price', 'total', 'date') 
                                       VALUES (?, ?, ?, ?, ?, ?);"""
 
-            data_tuple = (pair, base_asset, quote_asset, price, total, datetime.now(datetime.timezone.utc))
+            data_tuple = (pair, base_asset, quote_asset, price, total, datetime.now())
 
             cursor.execute(sqlite_insert_with_param, data_tuple)
             db.commit()
 
-            update_sell_state(0)
-            update_buy_barrier(price - 0.10)
+            self.update_sell_state(0)
+            self.update_buy_barrier(price - 0.10)
 
         except sqlite3.Error as e:
             print(e)
