@@ -1,3 +1,2 @@
 python-binance
-colorama
 bottle

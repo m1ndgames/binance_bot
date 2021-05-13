@@ -8,8 +8,6 @@ import math
 import requests
 from threading import Thread
 from datetime import datetime
-from colorama import init, Fore, Style
-init()
 
 
 class BinanceBot:
@@ -72,52 +70,52 @@ class BinanceBot:
 
         # Stop if missing config values
         if not self.config['pair']:
-            print(str("Config incomplete - Set all values in the WebUI and restart the bot!"))
+            self.output(level="warn", text="Config incomplete - Set all values in the WebUI and restart the bot!", telegram=False, log=False)
             return
         if not self.config['base_asset']:
-            print(str("Config incomplete - Set all values in the WebUI and restart the bot!"))
+            self.output(level="warn", text="Config incomplete - Set all values in the WebUI and restart the bot!", telegram=False, log=False)
             return
         if not self.config['quote_asset']:
-            print(str("Config incomplete - Set all values in the WebUI and restart the bot!"))
+            self.output(level="warn", text="Config incomplete - Set all values in the WebUI and restart the bot!", telegram=False, log=False)
             return
         if not self.config['change_limit']:
-            print(str("Config incomplete - Set all values in the WebUI and restart the bot!"))
+            self.output(level="warn", text="Config incomplete - Set all values in the WebUI and restart the bot!", telegram=False, log=False)
             return
         if not self.config['minimum_profit']:
-            print(str("Config incomplete - Set all values in the WebUI and restart the bot!"))
+            self.output(level="warn", text="Config incomplete - Set all values in the WebUI and restart the bot!", telegram=False, log=False)
             return
         if not self.config['take_profit']:
-            print(str("Config incomplete - Set all values in the WebUI and restart the bot!"))
+            self.output(level="warn", text="Config incomplete - Set all values in the WebUI and restart the bot!", telegram=False, log=False)
             return
         if not self.config['max_price']:
-            print(str("Config incomplete - Set all values in the WebUI and restart the bot!"))
+            self.output(level="warn", text="Config incomplete - Set all values in the WebUI and restart the bot!", telegram=False, log=False)
             return
         if not self.config['redcandle_size']:
-            print(str("Config incomplete - Set all values in the WebUI and restart the bot!"))
+            self.output(level="warn", text="Config incomplete - Set all values in the WebUI and restart the bot!", telegram=False, log=False)
             return
         if not self.config['timer']:
-            print(str("Config incomplete - Set all values in the WebUI and restart the bot!"))
+            self.output(level="warn", text="Config incomplete - Set all values in the WebUI and restart the bot!", telegram=False, log=False)
             return
         if not self.config['buy_trigger']:
-            print(str("Config incomplete - Set all values in the WebUI and restart the bot!"))
+            self.output(level="warn", text="Config incomplete - Set all values in the WebUI and restart the bot!", telegram=False, log=False)
             return
         if not self.config['sell_trigger']:
-            print(str("Config incomplete - Set all values in the WebUI and restart the bot!"))
+            self.output(level="warn", text="Config incomplete - Set all values in the WebUI and restart the bot!", telegram=False, log=False)
             return
         if not self.config['testmode']:
-            print(str("Config incomplete - Set all values in the WebUI and restart the bot!"))
+            self.output(level="warn", text="Config incomplete - Set all values in the WebUI and restart the bot!", telegram=False, log=False)
             return
         if not self.config['binance_apikey']:
-            print(str("Config incomplete - Set all values in the WebUI and restart the bot!"))
+            self.output(level="warn", text="Config incomplete - Set all values in the WebUI and restart the bot!", telegram=False, log=False)
             return
         if not self.config['binance_apikey_secret']:
-            print(str("Config incomplete - Set all values in the WebUI and restart the bot!"))
+            self.output(level="warn", text="Config incomplete - Set all values in the WebUI and restart the bot!", telegram=False, log=False)
             return
         if self.config['telegram_active'] == 'on' and not self.config['telegram_apikey']:
-            print(str("Telegram activated but no API key provided!"))
+            self.output(level="warn", text="Telegram activated but no API key provided!", telegram=False, log=False)
             self.config['telegram_active'] = 'off'
         if self.config['telegram_active'] == 'on' and not self.config['telegram_channel_id']:
-            print(str("Telegram activated but no channel ID provided!"))
+            self.output(level="warn", text="Telegram activated but no channel ID provided!", telegram=False, log=False)
             self.config['telegram_active'] = 'off'
 
         # Binance Client
@@ -163,21 +161,11 @@ class BinanceBot:
                 countdown = int(self.config['timer'])
             self.countdown_timer = countdown
 
-    def output(self, level: str = "info", text: str = None, telegram: bool = False, log: bool = False):
+    def output(self, text: str = None, telegram: bool = False, log: bool = False):
         now = datetime.now()
         time_string = now.strftime("%d/%m/%Y %H:%M:%S")
 
-        if level == 'info':
-            color = Fore.GREEN
-        elif level == 'warn':
-            color = Fore.YELLOW
-            log = True
-        else:
-            color = Fore.RED
-            log = True
-            telegram = True
-
-        print(color + str(time_string) + Style.RESET_ALL + " - " + str(text) + Style.RESET_ALL)
+        print(str(time_string) + "\t\t" + str(text))
 
         if self.config['telegram_active'] == 'on':
             if telegram:
@@ -185,7 +173,7 @@ class BinanceBot:
 
         if log:
             f = open("binance_bot.log", "a")
-            f.write(str(time_string) + " - " + str(level) + " - " + text + "\n")
+            f.write(str(time_string) + " - " + " - " + text + "\n")
             f.close()
 
     def get_price(self):
@@ -201,15 +189,8 @@ class BinanceBot:
                 return price
 
     def status_message(self):
-        if self.base_asset_change < 0:
-            change_color = Fore.RED
-        elif self.base_asset_change > 0:
-            change_color = Fore.GREEN
-        else:
-            change_color = Style.RESET_ALL
-
         asset_line = "Wallet - " + self.base_asset_name + ": " + str(self.base_asset_balance_precision) + "\t" + self.quote_asset_name + ": " + self.quote_asset_balance_precision
-        price_line = "Token  - Price: " + str(self.base_asset_price) + "\tChange: " + change_color + str(self.base_asset_change) + Style.RESET_ALL
+        price_line = "Token  - Price: " + str(self.base_asset_price) + "\tChange: " + str(self.base_asset_change)
 
         if self.database.is_selling() == 1:
             asset_line = asset_line + "\tBuy Price: " + str(self.base_asset_buy_price) + " - Sell Price: " + str(self.base_asset_sell_price) + " - Take profit at: " + str(self.base_asset_take_profit_price)
@@ -221,8 +202,8 @@ class BinanceBot:
         elif self.buy_counter != 0 and not self.base_asset_buy_price:
             price_line = price_line + "\tBuy Counter: " + str(self.buy_counter) + "/" + str(int(self.config['buy_trigger']))
 
-        self.output(text=asset_line, telegram=False, log=False)
-        self.output(text=price_line, telegram=False, log=False)
+        self.output(text=asset_line)
+        self.output(text=price_line)
 
     def round_step_size(self, quantity, step_size):
         precision = int(round(-math.log(float(step_size), 10), 0))
@@ -236,7 +217,7 @@ class BinanceBot:
         if amount and price:
             rounded = self.floor_step_size(float(amount), float(self.pair_step_size))
             if self.config['testmode'] == 'on':
-                self.output(level="warn", text="Test sell-order triggered", telegram=False, log=False)
+                self.output(level="warn", text="Test sell-order triggered")
             else:
                 try:
                     order = self.binance.create_order(
@@ -248,8 +229,6 @@ class BinanceBot:
                         quantity=rounded,
                         price=price)
                     if order:
-                        print(str(order))
-
                         # Write sell data to database
                         self.database.write_sell_data(str(self.trading_pair_info['symbol']), str(self.base_asset_name), str(self.quote_asset_name), float(price), float(rounded))
 
@@ -262,12 +241,11 @@ class BinanceBot:
             rounded = self.floor_step_size(float(amount), float(self.pair_step_size))
 
             if self.config['testmode'] == 'on':
-                self.output(level="warn", text="Test buy-order triggered", telegram=True, log=False)
+                self.output(text="Test buy-order triggered", telegram=True)
             else:
                 try:
                     order = self.binance.order_market_buy(symbol=self.database.read_config()[0], quoteOrderQty=rounded, newOrderRespType=ORDER_RESP_TYPE_FULL)
                     if order:
-                        print(str(order))
                         if order['status'] == 'FILLED':
                             if order['fills']:
                                 for fill in order['fills']:
@@ -348,13 +326,13 @@ class BinanceBot:
                         sell_order = self.sell_order(self.base_asset_balance['free'], self.base_asset_price)
                         if sell_order:
                             rounded = (float(self.base_asset_balance['free']) // float(self.pair_step_size)) * float(self.pair_step_size)
-                            self.output(level="info", text=Fore.RED + "Sold " + Style.RESET_ALL + str(rounded) + " " + self.base_asset_name + " for " + str(self.base_asset_price) + " " + self.quote_asset_name, telegram=True, log=True)
+                            self.output(text="Sold " + str(rounded) + " " + self.base_asset_name + " for " + str(self.base_asset_price) + " " + self.quote_asset_name, telegram=True, log=True)
 
                     elif self.base_asset_sell_price < self.base_asset_price and self.base_asset_balance['free'] > self.pair_min_quantity and self.sell_counter >= int(self.config['sell_trigger']):
                         sell_order = self.sell_order(self.base_asset_balance['free'], self.base_asset_price)
                         if sell_order:
                             rounded = (float(self.base_asset_balance['free']) // float(self.pair_step_size)) * float(self.pair_step_size)
-                            self.output(level="info", text=Fore.RED + "Sold " + Style.RESET_ALL + str(rounded) + " " + self.base_asset_name + " for " + str(self.base_asset_price) + " " + self.quote_asset_name, telegram=True, log=True)
+                            self.output(text="Sold " + str(rounded) + " " + self.base_asset_name + " for " + str(self.base_asset_price) + " " + self.quote_asset_name, telegram=True, log=True)
 
                 #  Buy Logic
                 else:
@@ -368,7 +346,7 @@ class BinanceBot:
                                     except requests.exceptions.RequestException as e:
                                         raise SystemExit(e)
 
-                                    self.output(level="info", text=Fore.GREEN + "Bought " + Style.RESET_ALL + str(new_base_asset_balance) + " " + self.base_asset_name + " for " + str(self.quote_asset_balance_precision) + " " + self.quote_asset_name, telegram=True, log=True)
+                                    self.output(text="Bought " + str(new_base_asset_balance['free']) + " " + self.base_asset_name + " for " + str(self.quote_asset_balance_precision) + " " + self.quote_asset_name, telegram=True, log=True)
                         else:
                             buy_order = self.buy_order(float(self.quote_asset_balance_precision))
                             if buy_order:
@@ -377,7 +355,7 @@ class BinanceBot:
                                 except requests.exceptions.RequestException as e:
                                     raise SystemExit(e)
 
-                                self.output(level="info", text=Fore.GREEN + "Bought " + Style.RESET_ALL + str(new_base_asset_balance) + " " + self.base_asset_name + " for " + str(self.quote_asset_balance_precision) + " " + self.quote_asset_name, telegram=True, log=True)
+                                self.output(text="Bought " + str(new_base_asset_balance) + " " + self.base_asset_name + " for " + str(self.quote_asset_balance_precision) + " " + self.quote_asset_name, telegram=True, log=True)
 
                 # End the loop
                 self.base_asset_old_price = self.base_asset_price
@@ -388,11 +366,11 @@ class BinanceBot:
         # Set variables
         self.setup()
 
-        self.output(level="info", text="binance_bot started", telegram=True, log=True)
+        self.output(text="binance_bot started", telegram=True, log=True)
 
         # Show warning if testmode is active
         if self.config['testmode'] == 'on':
-            self.output(level="warn", text="Warning: Testmode is active - orders wont be processed.", telegram=True, log=False)
+            self.output(text="Warning: Testmode is active - orders wont be processed.", telegram=True)
 
         # Start webserver
         self.webserver_thread = Thread(target=self.webserver.start(), daemon=True, name='webserver')
@@ -403,7 +381,7 @@ class BinanceBot:
 
             # Restart crashed threads
             if not self.bot_thread.is_alive():
-                self.output(level="warn", text="binance_bot crashed - restarting thread", telegram=True, log=True)
+                self.output(text="binance_bot crashed - restarting thread", telegram=True, log=True)
                 self.bot_thread = Thread(target=self.bot, daemon=True, name='bot')
                 self.bot_thread.start()
 
