@@ -122,7 +122,7 @@ class DatabaseManager:
             db.commit()
 
             self.update_sell_state(0)
-            self.update_buy_barrier(price - self.database.read_config()[7])
+            self.update_buy_barrier(price - self.read_config()[7])
 
         except sqlite3.Error as e:
             print(e)
