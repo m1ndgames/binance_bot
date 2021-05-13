@@ -2,33 +2,14 @@
 A binance bot that watches a configured crypto pair and buys/sells according to price changes which can be freely
 configured. The buy/sell actions are sent to a configurable Telegram channel.
 
+The bot is configured and controlled via a web UI which runs on the localhost address. If you plan to access it remotely
+via a reverse proxy, please make sure to implement some form of authentication (for example something like htaccess basic
+auth)
+
 ### Config
-````
-[token]
-pair           = ADAUSDT    # The Pair (for example BTCUSDT)
-token          = ADA        # Token (BTC)
-currency       = USDT       # Currency (USDT) - Can also be ETH or whatever pair is used.
-
-[base]
-change_limit   = <FLOAT>    # If the coin prices changes by this amount, the buy/sell counter is raised.
-minimum_profit = <FLOAT>    # The minimum profit per coin. The bot will sell when this is reached and sell counter is hit.
-take_profit    = <FLOAT>    # If the price goes above buy price + take_profit, the bot sells no matter the counter.
-max_price      = <FLOAT>    # The Max price of a coin, if its above the bot wont buy.
-redcandle_size = <FLOAT>    # This is a buy barrier. If you define 0.1 the bot will buy when price reaches the last sell price - candle_size.
-timer          = <INT>      # Delay in seconds in between each check.
-buy_trigger    = <INT>      # How many times a coin value should go up (change_limit) before the bot buys.
-sell_trigger   = <INT>      # How many times a coin value should go up (change_limit) before the bot sells.
-testmode       = <0|1>      # If enabled, no orders are processed.
-
-[binance]
-apikey         = <binance api key>
-apikey_secret  = <binance secret api key>
-
-[telegram]
-active         = true
-apikey         = <bot token>
-channel_id     = <telegram channel id>
-````
+* Start the bot with ```python3 run.py```
+* Access the local web UI on http://127.0.0.1:5311/config
+* Restart the bot
 
 ### Telegram Setup
 If configured, you need to create a Telegram channel and a bot.
@@ -48,11 +29,10 @@ If configured, you need to create a Telegram channel and a bot.
 * Create a bot with Botfather (https://core.telegram.org/bots) and receive the bot token
 * Invite the bot to your channel
 
-### Bugs / Improvements
-If you find a bug or have a feature request please open a github issue.
-
-### Contact
-You can reach me via Discord: m1ndgames#1337
+### Known issues / bugs
+The bot relies on buy data to define the sell price. This means that you should not start this bot when you already have
+crypto currency on the exchange. Else it will potentially buy more using available funds, and then work with any
+crypto currency available - defining the sell price for this asset as it has recorded himself.
 
 ### Donations
 If you like my work and want to send me some coins along, please use this ADA address:
