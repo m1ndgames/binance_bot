@@ -28,7 +28,6 @@ class BinanceBot:
         self.base_asset_balance_precision = None
         self.base_asset_price = None
         self.base_asset_sell_price = None
-        self.base_asset_previous_sell_price = None
         self.base_asset_take_profit_price = None
         self.base_asset_buy_price = None
         self.base_asset_old_price = None
