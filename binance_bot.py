@@ -260,7 +260,7 @@ class BinanceBot:
 
     def buy_order(self, amount: float = None):
         if amount:
-            rounded = (float(amount) // float(self.pair_step_size)) * float(self.pair_step_size)
+            rounded = self.floor_step_size(float(amount), float(self.pair_step_size))
 
             if self.config['testmode'] == 'on':
                 self.output(level="warn", text="Test buy-order triggered", telegram=True, log=False)
