@@ -306,13 +306,13 @@ class BinanceBot:
                         sell_order = self.sell_order(self.base_asset_balance['free'], self.base_asset_price)
                         if sell_order:
                             rounded = (float(self.base_asset_balance['free']) // float(self.pair_step_size)) * float(self.pair_step_size)
-                            self.output(text="Sold " + str(rounded) + " " + self.base_asset_name + " for " + str(self.base_asset_price) + " " + self.quote_asset_name + " - Total: " + (rounded * self.base_asset_price) + " " + self.quote_asset_name, telegram=True, log=True)
+                            self.output(text="Sold " + str(rounded) + " " + self.base_asset_name + " for " + str(self.base_asset_price) + " " + self.quote_asset_name + " - Total: " + str(rounded * self.base_asset_price) + " " + self.quote_asset_name, telegram=True, log=True)
 
                     elif self.base_asset_sell_price < self.base_asset_price and self.base_asset_balance['free'] > self.pair_min_quantity and self.sell_counter >= int(self.config['sell_trigger']):
                         sell_order = self.sell_order(self.base_asset_balance['free'], self.base_asset_price)
                         if sell_order:
                             rounded = (float(self.base_asset_balance['free']) // float(self.pair_step_size)) * float(self.pair_step_size)
-                            self.output(text="Sold " + str(rounded) + " " + self.base_asset_name + " for " + str(self.base_asset_price) + " " + self.quote_asset_name + " - Total: " + (rounded * self.base_asset_price) + " " + self.quote_asset_name, telegram=True, log=True)
+                            self.output(text="Sold " + str(rounded) + " " + self.base_asset_name + " for " + str(self.base_asset_price) + " " + self.quote_asset_name + " - Total: " + str(rounded * self.base_asset_price) + " " + self.quote_asset_name, telegram=True, log=True)
 
                 #  Buy Logic
                 else:
