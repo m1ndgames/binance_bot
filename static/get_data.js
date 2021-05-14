@@ -7,6 +7,9 @@ function loadData(){
         $('#trading_pair').html(
             data.pair
         );
+        $('#buy_barrier').html(
+            data.buy_barrier
+        );
         $('#price').html(
             data.base_asset_name + " = " + data.base_asset_price + " " + data.quote_asset_name
         );
