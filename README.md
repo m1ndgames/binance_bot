@@ -7,8 +7,9 @@ via a reverse proxy, please make sure to implement some form of authentication (
 auth)
 
 ### Config
-* Start the bot with ```python3 run.py```
-* Access the local web UI on http://127.0.0.1:5311/config
+* Install python requirements: ``pip3 install -r requirements.txt``
+* Start the bot: ```python3 run.py```
+* Access the web UI on ``http://127.0.0.1:5311/config``
 
 ### Telegram Setup
 If configured, you need to create a Telegram channel and a bot.
