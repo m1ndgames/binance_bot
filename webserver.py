@@ -111,6 +111,9 @@ class Webserver:
     def serve_static(self, filename):
         return static_file(filename, root='./static')
 
+    def serve_img(self, filename):
+        return static_file(filename, root='./img')
+
     def run(self):
         web = Webserver(self.bot)
 
@@ -120,6 +123,7 @@ class Webserver:
         bottle.route("/saveconfig", method='POST')(web.saveconfig)
         bottle.route("/stats")(web.stats)
         bottle.route("/static/<filename>")(web.serve_static)
+        bottle.route("/img/<filename>")(web.serve_img)
         bottle.route("/api/<path>")(web.api)
 
         # Start Webserver
