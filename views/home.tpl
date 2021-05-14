@@ -1,4 +1,4 @@
-%include('header.tpl', title='Index')
+%include('header.tpl', title='Home')
 
 <script src="/static/get_logs.js"></script>
 

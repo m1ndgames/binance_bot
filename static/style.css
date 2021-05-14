@@ -1,8 +1,8 @@
-html{
-background-image: url("../img/tile_background.png");
-background-color: green;
+html {
+    background-image: url("../img/tile_background.png");
+    background-color: green;
 }
-body{
+body {
     font-family: 'Oxanium', cursive;
     color: white;
     position: absolute;
@@ -11,185 +11,190 @@ body{
 }
 
 /*HEADER*/
-.logo h1{
+.logo h1 {
     font-family: 'Wallpoet', cursive;
     font-size: 120px;
-color: #86c232;
-float:left;
-height:80px;
-}
-.logo img{
-float:left;
-}
-.logo{
-margin: 0 auto;
-clear: both;
-width: 100%;
-background: linear-gradient(to top, rgba(0,0,0,0.7),  rgba(0,0,0,0));
-min-height:240px;
-padding-top: 10px;
-}
-.logoContent{
-margin: 0 auto;
-width: 80%;
+    color: #86c232;
+    float:left;
+    height:80px;
 }
 
-.navigation{
-width: 100%;
-background-color: #86c232;
-min-height: 48px;
-font-size: 32px;
-text-align: center;
-margin: 0 auto;
-padding-top: 8px;
-position: relative;
-clear: both;
+.logo img {
+    float:left;
 }
+
+.logo {
+    margin: 0 auto;
+    clear: both;
+    width: 100%;
+    background: linear-gradient(to top, rgba(0,0,0,0.7),  rgba(0,0,0,0));
+    min-height:240px;
+    padding-top: 10px;
+}
+
+.logoContent {
+    margin: 0 auto;
+    width: 80%;
+}
+
+.navigation {
+    width: 100%;
+    background-color: #86c232;
+    min-height: 48px;
+    font-size: 32px;
+    text-align: center;
+    margin: 0 auto;
+    padding-top: 8px;
+    position: relative;
+    clear: both;
+}
+
 .navigation a {
-text-decoration: none;
-color: white;
-text-align: center;
+    text-decoration: none;
+    color: white;
+    text-align: center;
 }
 
-.ticker{
-background: linear-gradient(to bottom, rgba(0,0,0,0.7),  rgba(0,0,0,0));
-min-height: 80px;
-text-align: center;
-padding: 10px;
-margin: 0 auto;
-clear: both;
-
+.ticker {
+    background: linear-gradient(to bottom, rgba(0,0,0,0.7),  rgba(0,0,0,0));
+    min-height: 80px;
+    text-align: center;
+    padding: 10px;
+    margin: 0 auto;
+    clear: both;
 }
 
-.ticker .tickerContent{
-display: flex;
-  align-items: center;
-  justify-content: center;
-text-align: center;
-clear: both;
-margin: 0 auto;
-}
-.tickerContent div{
-text-align: center;
+.ticker .tickerContent {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    clear: both;
+    margin: 0 auto;
 }
 
-.tickerItem{
-text-align: center;
+.tickerContent div {
+    text-align: center;
 }
 
-.title{
-float: left;
-padding-right: 8px;
-color: #86c232;
-
-}
-.value{
-float: left;
-padding-right: 16px;
-}
-.seperator{
-border-bottom: solid 1px #ff6804;
-width: 100%;
-height: 2px;
-margin-bottom: 5px;
+.tickerItem {
+    text-align: center;
 }
 
-.navigation .material-icons{
-font-size: 36px;
-vertical-align: sub;
+.title {
+    float: left;
+    padding-right: 8px;
+    color: #86c232;
+}
+
+.value {
+    float: left;
+    padding-right: 16px;
+}
+
+.seperator  {
+    border-bottom: solid 1px #ff6804;
+    width: 100%;
+    height: 2px;
+    margin-bottom: 5px;
+}
+
+.navigation .material-icons {
+    font-size: 36px;
+    vertical-align: sub;
 }
 
 /*INDEX & STATS*/
-.content{
-min-height: 500px;
-background: linear-gradient(to bottom, rgba(0,0,0,0.7),  rgba(0,0,0,0));
-border: solid 1px #ff6804;
-padding: 10px;
-margin: 0 auto;
-width: 50%;
+.content {
+    min-height: 500px;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.7),  rgba(0,0,0,0));
+    border: solid 1px #ff6804;
+    padding: 10px;
+    margin: 0 auto;
+    width: 50%;
 }
 
-.headlineSeperator h2{
-border-bottom: solid 1px #ff6804;
-width: 30%;
-text-align: center;
-margin-left:-10px;
+.headlineSeperator h2 {
+    border-bottom: solid 1px #ff6804;
+    width: 30%;
+    text-align: center;
+    margin-left:-10px;
 }
 
 /*CONFIG*/
-.formWrapper{
-background: linear-gradient(to bottom, rgba(0,0,0,0.7),  rgba(0,0,0,0));
-border: solid 1px #ff6804;
-margin: 0 auto;
-width: 70%;
-}
-.grid-container{
-display: grid;
-  grid-template-columns: 25% 25%  25%  25% ;
-  grid-column-gap: 10px;
-}
-.grid-item{
-text-align: center;
-min-height: 40px;
-padding-top: 10px;
-
+.formWrapper {
+    background: linear-gradient(to bottom, rgba(0,0,0,0.7),  rgba(0,0,0,0));
+    border: solid 1px #ff6804;
+    margin: 0 auto;
+    width: 70%;
 }
 
-.formWrapper input[type=submit]{
-width: 100%;
-min-height: 40px;
-background-color: #86c232;
-border: none;
-  color: white;
-  text-decoration: none;
-  font-size: 24px;
-  margin-top: 20px;
-  text-align: center;
+.grid-container {
+    display: grid;
+    grid-template-columns: 25% 25%  25%  25% ;
+    grid-column-gap: 10px;
+}
+
+.grid-item {
+    text-align: center;
+    min-height: 40px;
+    padding-top: 10px;
+}
+
+.formWrapper input[type=submit] {
+    width: 100%;
+    min-height: 40px;
+    background-color: #86c232;
+    border: none;
+    color: white;
+    text-decoration: none;
+    font-size: 24px;
+    margin-top: 20px;
+    text-align: center;
 }
 
 input {
-  width: 50%;
-  border: solid 1px #86c232;
+    width: 50%;
+    border: solid 1px #86c232;
 }
 
-.formSeperator h2{
-border-bottom: solid 1px #ff6804;
-width: 100%;
-text-align: center;
+.formSeperator h2 {
+    border-bottom: solid 1px #ff6804;
+    width: 100%;
+    text-align: center;
 }
 
 /*SAFECONFIG*/
-
-.saveContent{
-background: linear-gradient(to bottom, rgba(0,0,0,0.7),  rgba(0,0,0,0));
-border: solid 1px #ff6804;
-padding: 10px;
-margin: 0 auto;
-width: 50%;
-text-align:center;
-padding-bottom: 25px;
+.saveContent {
+    background: linear-gradient(to bottom, rgba(0,0,0,0.7),  rgba(0,0,0,0));
+    border: solid 1px #ff6804;
+    padding: 10px;
+    margin: 0 auto;
+    width: 50%;
+    text-align:center;
+    padding-bottom: 25px;
 }
 
 /*FOOTER*/
-
-
-.footer{
-width: 100%;
-background-color: #ff6804;
-min-height: 32px;
-font-size: 18px;
-text-align: center;
-margin: 0 auto;
-padding-top: 8px;
-position: relative;
-clear: both;
+.footer {
+    width: 100%;
+    background-color: #ff6804;
+    min-height: 32px;
+    font-size: 18px;
+    text-align: center;
+    margin: 0 auto;
+    padding-top: 8px;
+    position: relative;
+    clear: both;
 }
+
 .footer a {
-text-decoration: none;
-color: white;
-text-align: center;
+    text-decoration: none;
+    color: white;
+    text-align: center;
 }
-.footer .material-icons{
-font-size: 36px;
-vertical-align: middle;
+
+.footer .material-icons {
+    font-size: 36px;
+    vertical-align: middle;
 }

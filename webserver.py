@@ -8,9 +8,10 @@ class Webserver:
         self.bot = bot
 
     # Define Sites
-    def index(self):
-        return bottle.template('index',
-                               countdown=self.bot.countdown_timer
+    def home(self):
+        return bottle.template('home',
+                               countdown=self.bot.countdown_timer,
+                               is_selling=self.bot.database.is_selling()
                                )
 
     def config(self):
@@ -32,7 +33,8 @@ class Webserver:
                                binance_apikey_secret=self.bot.database.read_config()[13],
                                telegram_active=self.bot.database.read_config()[14],
                                telegram_apikey=self.bot.database.read_config()[15],
-                               telegram_channel_id=self.bot.database.read_config()[16]
+                               telegram_channel_id=self.bot.database.read_config()[16],
+                               is_selling=self.bot.database.is_selling()
                                )
 
     def saveconfig(self):
@@ -60,14 +62,16 @@ class Webserver:
 
         return bottle.template('saveconfig',
                                msg="Config saved successfully",
-                               countdown=self.bot.countdown_timer
+                               countdown=self.bot.countdown_timer,
+                               is_selling=self.bot.database.is_selling()
                                )
 
     def stats(self):
         orders = self.bot.database.read_all_orders()
         return bottle.template('stats',
                                orders=orders,
-                               countdown=self.bot.countdown_timer
+                               countdown=self.bot.countdown_timer,
+                               is_selling=self.bot.database.is_selling()
                                )
 
     def api(self, path=None):
@@ -118,7 +122,7 @@ class Webserver:
         web = Webserver(self.bot)
 
         # Routes
-        bottle.route("/")(web.index)
+        bottle.route("/")(web.home)
         bottle.route("/config")(web.config)
         bottle.route("/saveconfig", method='POST')(web.saveconfig)
         bottle.route("/stats")(web.stats)
@@ -128,4 +132,3 @@ class Webserver:
 
         # Start Webserver
         bottle.run(server='wsgiref', host='127.0.0.1', port=5311, quiet=True)
-
