@@ -49,7 +49,7 @@ sql_config_table = """ CREATE TABLE IF NOT EXISTS config (
 
 
 class DatabaseManager:
-    def __init__(self, bot=None):
+    def __init__(self, bot):
         self.bot = bot
 
     def setup_database(self):
