@@ -2,6 +2,6 @@
 
 <meta http-equiv="refresh" content="5;url=/config" />
 
-Config saved - Returning...
+{{msg}} - Returning...
 
 %include('footer.tpl')

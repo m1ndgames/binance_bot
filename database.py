@@ -85,7 +85,7 @@ class DatabaseManager:
                                               'sell_trigger', 'testmode', 'telegram_active') 
                                               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"""
 
-                init_data = ('ADAUSDT', 'ADA', 'USDT', 0.001, 0.05, 0.25, 10, 0.075, 10, 5, 5, "on", "off")
+                init_data = ('ADAUSDT', 'ADA', 'USDT', 0.001, 0.02, 0.04, 1.9, 0.04, 10, 3, 3, "on", "off")
                 cursor.execute(setup_config_data, init_data)
                 db.commit()
 

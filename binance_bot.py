@@ -173,7 +173,7 @@ class BinanceBot:
 
         if log:
             f = open("binance_bot.log", "a")
-            f.write(str(time_string) + " - " + " - " + text + "\n")
+            f.write(str(time_string) + " - " + text + "\n")
             f.close()
 
     def get_price(self):
@@ -187,23 +187,6 @@ class BinanceBot:
             if asset['symbol'] == pair:
                 price = asset['price']
                 return price
-
-    def status_message(self):
-        asset_line = "Wallet - " + self.base_asset_name + ": " + str(self.base_asset_balance_precision) + "\t" + self.quote_asset_name + ": " + self.quote_asset_balance_precision
-        price_line = "Token  - Price: " + str(self.base_asset_price) + "\tChange: " + str(self.base_asset_change)
-
-        if self.database.is_selling() == 1:
-            asset_line = asset_line + "\tBuy Price: " + str(self.base_asset_buy_price) + " - Sell Price: " + str(self.base_asset_sell_price) + " - Take profit at: " + str(self.base_asset_take_profit_price)
-        if self.database.read_buy_barrier() != 0.0 and not self.database.is_selling():
-            asset_line = asset_line + "\tBuying below " + str(self.database.read_buy_barrier())
-
-        if self.sell_counter != 0 and self.database.is_selling() == 1:
-            price_line = price_line + "\tSell Counter: " + str(self.sell_counter) + "/" + str(int(self.config['sell_trigger']))
-        elif self.buy_counter != 0 and not self.database.is_selling():
-            price_line = price_line + "\tBuy Counter: " + str(self.buy_counter) + "/" + str(int(self.config['buy_trigger']))
-
-        self.output(text=asset_line)
-        self.output(text=price_line)
 
     def round_step_size(self, quantity, step_size):
         precision = int(round(-math.log(float(step_size), 10), 0))
@@ -317,22 +300,19 @@ class BinanceBot:
                     self.buy_counter = self.buy_counter + 1
                     self.sell_counter = 0
 
-                # Print status messages
-                self.status_message()
-
                 # Sell Logic
                 if self.database.is_selling() == 1:
                     if self.base_asset_take_profit_price < self.base_asset_price and self.base_asset_balance['free'] > self.pair_min_quantity:
                         sell_order = self.sell_order(self.base_asset_balance['free'], self.base_asset_price)
                         if sell_order:
                             rounded = (float(self.base_asset_balance['free']) // float(self.pair_step_size)) * float(self.pair_step_size)
-                            self.output(text="Sold " + str(rounded) + " " + self.base_asset_name + " for " + str(self.base_asset_price) + " " + self.quote_asset_name, telegram=True, log=True)
+                            self.output(text="Sold " + str(rounded) + " " + self.base_asset_name + " for " + str(self.base_asset_price) + " " + self.quote_asset_name + " - Total: " + (rounded * self.base_asset_price) + " " + self.quote_asset_name, telegram=True, log=True)
 
                     elif self.base_asset_sell_price < self.base_asset_price and self.base_asset_balance['free'] > self.pair_min_quantity and self.sell_counter >= int(self.config['sell_trigger']):
                         sell_order = self.sell_order(self.base_asset_balance['free'], self.base_asset_price)
                         if sell_order:
                             rounded = (float(self.base_asset_balance['free']) // float(self.pair_step_size)) * float(self.pair_step_size)
-                            self.output(text="Sold " + str(rounded) + " " + self.base_asset_name + " for " + str(self.base_asset_price) + " " + self.quote_asset_name, telegram=True, log=True)
+                            self.output(text="Sold " + str(rounded) + " " + self.base_asset_name + " for " + str(self.base_asset_price) + " " + self.quote_asset_name + " - Total: " + (rounded * self.base_asset_price) + " " + self.quote_asset_name, telegram=True, log=True)
 
                 #  Buy Logic
                 else:
@@ -346,7 +326,7 @@ class BinanceBot:
                                     except requests.exceptions.RequestException as e:
                                         raise SystemExit(e)
 
-                                    self.output(text="Bought " + str(new_base_asset_balance['free']) + " " + self.base_asset_name + " for " + str(self.quote_asset_balance_precision) + " " + self.quote_asset_name, telegram=True, log=True)
+                                    self.output(text="Bought " + str(new_base_asset_balance['free']) + " " + self.base_asset_name + " for " + str(self.quote_asset_balance_precision) + " " + self.quote_asset_name + " at " + str(self.base_asset_price) + " " + str(self.quote_asset_name), telegram=True, log=True)
                         else:
                             buy_order = self.buy_order(float(self.quote_asset_balance_precision))
                             if buy_order:
@@ -355,7 +335,7 @@ class BinanceBot:
                                 except requests.exceptions.RequestException as e:
                                     raise SystemExit(e)
 
-                                self.output(text="Bought " + str(new_base_asset_balance['free']) + " " + self.base_asset_name + " for " + str(self.quote_asset_balance_precision) + " " + self.quote_asset_name, telegram=True, log=True)
+                                self.output(text="Bought " + str(new_base_asset_balance['free']) + " " + self.base_asset_name + " for " + str(self.quote_asset_balance_precision) + " " + self.quote_asset_name + " at " + str(self.base_asset_price) + " " + str(self.quote_asset_name), telegram=True, log=True)
 
                 # End the loop
                 self.base_asset_old_price = self.base_asset_price
@@ -391,4 +371,5 @@ class BinanceBot:
 
             # Stop program and kill all threads when we stop the bottle webserver
             if not self.webserver_thread.is_alive():
+                self.output(text="binance_bot stopped", telegram=True, log=True)
                 exit(0)

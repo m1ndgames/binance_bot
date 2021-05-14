@@ -1,5 +1,6 @@
 import bottle
 import json
+from bottle import static_file
 
 
 class Webserver:
@@ -9,16 +10,13 @@ class Webserver:
     # Define Sites
     def index(self):
         return bottle.template('index',
-                               countdown=self.bot.countdown_timer,
-                               pair=self.bot.config['pair'],
-                               base_asset_name=self.bot.base_asset_name,
-                               base_asset_price=self.bot.base_asset_price,
-                               quote_asset_name=self.bot.quote_asset_name,
-                               base_asset_balance_precision=self.bot.base_asset_balance_precision,
-                               quote_asset_balance_precision=self.bot.quote_asset_balance_precision)
+                               countdown=self.bot.countdown_timer
+                               )
 
     def config(self):
-        return bottle.template('config', pair=self.bot.database.read_config()[0],
+        return bottle.template('config',
+                               countdown=self.bot.countdown_timer,
+                               pair=self.bot.database.read_config()[0],
                                base_asset=self.bot.database.read_config()[1],
                                quote_asset=self.bot.database.read_config()[2],
                                change_limit=self.bot.database.read_config()[3],
@@ -34,7 +32,8 @@ class Webserver:
                                binance_apikey_secret=self.bot.database.read_config()[13],
                                telegram_active=self.bot.database.read_config()[14],
                                telegram_apikey=self.bot.database.read_config()[15],
-                               telegram_channel_id=self.bot.database.read_config()[16])
+                               telegram_channel_id=self.bot.database.read_config()[16]
+                               )
 
     def saveconfig(self):
         pair = bottle.request.forms.get('pair')
@@ -59,11 +58,17 @@ class Webserver:
                               redcandle_size, timer, buy_trigger, sell_trigger, testmode, binance_apikey,
                               binance_apikey_secret, telegram_active, telegram_apikey, telegram_channel_id)
 
-        return bottle.template('saveconfig', msg="Config saved successfully")
+        return bottle.template('saveconfig',
+                               msg="Config saved successfully",
+                               countdown=self.bot.countdown_timer
+                               )
 
     def stats(self):
         orders = self.bot.database.read_all_orders()
-        return bottle.template('stats', orders=orders)
+        return bottle.template('stats',
+                               orders=orders,
+                               countdown=self.bot.countdown_timer
+                               )
 
     def api(self, path=None):
         if path == "asset_data":
@@ -74,10 +79,37 @@ class Webserver:
                                'quote_asset_name': self.bot.quote_asset_name,
                                'base_asset_balance_precision': self.bot.base_asset_balance_precision,
                                'quote_asset_balance_precision': self.bot.quote_asset_balance_precision,
-                               'buy_barrier': self.bot.database.read_buy_barrier()
+                               'buy_barrier': self.bot.database.read_buy_barrier(),
+                               'base_asset_buy_price': self.bot.base_asset_buy_price,
+                               'base_asset_sell_price': self.bot.base_asset_sell_price,
+                               'base_asset_take_profit_price': self.bot.base_asset_take_profit_price,
+                               'sell_counter': self.bot.sell_counter,
+                               'sell_trigger': self.bot.config['sell_trigger'],
+                               'buy_counter': self.bot.buy_counter,
+                               'buy_trigger': self.bot.config['buy_trigger'],
+                               'base_asset_change': self.bot.base_asset_change
                                })
+
+        elif path == "log":
+            reader = open('binance_bot.log', 'r')
+            try:
+                output = {}
+                output['log_lines'] = {}
+                id = 1
+                lines = reader.readlines()
+                for line in lines:
+                    output['log_lines'][id] = line
+                    id = id + 1
+
+                output['line_count'] = id
+                return json.dumps(output)
+            finally:
+                reader.close()
         else:
             return 0
+
+    def serve_static(self, filename):
+        return static_file(filename, root='./static')
 
     def run(self):
         web = Webserver(self.bot)
@@ -87,6 +119,7 @@ class Webserver:
         bottle.route("/config")(web.config)
         bottle.route("/saveconfig", method='POST')(web.saveconfig)
         bottle.route("/stats")(web.stats)
+        bottle.route("/static/<filename>")(web.serve_static)
         bottle.route("/api/<path>")(web.api)
 
         # Start Webserver
