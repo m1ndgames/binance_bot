@@ -1,2 +1,4 @@
+.idea/*
+
 binance_bot.log
-binance_bot.data
+binance_bot.sqlite
