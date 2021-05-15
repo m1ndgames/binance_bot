@@ -9,7 +9,7 @@ auth)
 ### Config
 * Install python requirements: ``pip3 install -r requirements.txt``
 * Start the bot: ```python3 run.py```
-* Access the web UI on ``http://127.0.0.1:5311/config``
+* Access the web UI on ``http://127.0.0.1:5311/config`` (See the pop-ups for explanation)
 
 ### Telegram Setup
 If configured, you need to create a Telegram channel and a bot.
@@ -28,6 +28,14 @@ If configured, you need to create a Telegram channel and a bot.
 ````
 * Create a bot with Botfather (https://core.telegram.org/bots) and receive the bot token
 * Invite the bot to your channel
+
+### Screenshots
+#### Home
+![No Connection](screenshots/binance_bot_screenshot_home.png?raw=true)
+#### Config
+![No Connection](screenshots/binance_bot_screenshot_config.png?raw=true)
+#### Stats
+![No Connection](screenshots/binance_bot_screenshot_stats.png?raw=true)
 
 ### Known issues / bugs
 The bot relies on buy data to define the sell price. This means that you should not start this bot when you already have
