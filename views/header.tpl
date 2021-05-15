@@ -13,6 +13,7 @@
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Wallpoet&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="shortcut icon" type="image/x-icon" href="../img/favicon-80x80.png">
 
 </head>
 <body>
