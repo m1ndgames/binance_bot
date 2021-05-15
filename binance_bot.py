@@ -6,7 +6,8 @@ import configparser
 import time
 import math
 import requests
-from threading import Thread
+#from threading import Thread
+import threading
 from datetime import datetime
 
 
@@ -41,6 +42,8 @@ class BinanceBot:
         self.pair_step_size = None
         self.pair_min_ordersize = None
         self.countdown_timer = None
+        self.buy_barrier_countdown_timer = None
+        self.buy_barrier_timer_thread = None
         self.telegram = None
         self.sell_counter = 0
         self.buy_counter = 0
@@ -67,6 +70,9 @@ class BinanceBot:
         self.config['telegram_active'] = self.database.read_config()[14]
         self.config['telegram_apikey'] = self.database.read_config()[15]
         self.config['telegram_channel_id'] = self.database.read_config()[16]
+        self.config['buy_barrier_step_size'] = self.database.read_config()[17]
+        self.config['buy_barrier_timer'] = self.database.read_config()[18]
+        self.config['buy_barrier_timer_enabled'] = self.database.read_config()[19]
 
         # Stop if missing config values
         if not self.config['pair']:
@@ -145,11 +151,11 @@ class BinanceBot:
         self.refresh_config()
 
         # Start timer thread
-        self.timer_thread = Thread(target=self.timer, daemon=True, name='timer')
+        self.timer_thread = threading.Thread(target=self.timer, daemon=True, name='timer')
         self.timer_thread.start()
 
         # Start bot thread
-        self.trading_thread = Thread(target=self.trading, daemon=True, name='bot')
+        self.trading_thread = threading.Thread(target=self.trading, daemon=True, name='bot')
         self.trading_thread.start()
 
     def timer(self):
@@ -249,6 +255,36 @@ class BinanceBot:
                         self.binance.cancel_order(symbol=self.database.read_config()[0], orderId=o['orderId'])
         except requests.exceptions.RequestException as e:
             raise SystemExit(e)
+
+    def check_buy_barrier_timer(self):
+        if self.config['buy_barrier_timer_enabled'] == 'on':
+            if not self.buy_barrier_timer_thread:
+                self.buy_barrier_timer_thread = threading.Thread(target=self.buy_barrier_timer, daemon=True, name='buy_barrier_timer')
+                self.buy_barrier_timer_thread.start()
+
+    def buy_barrier_timer(self):
+        while getattr(self.buy_barrier_timer_thread, "run", True):
+            buy_barrier_timer = int(self.config['buy_barrier_timer'])
+            while buy_barrier_timer > -1:
+                if self.config['buy_barrier_timer_enabled'] == 'off':
+                    self.buy_barrier_timer_thread = None
+                    self.buy_barrier_countdown_timer = None
+                    exit(0)
+
+                time.sleep(1)
+                buy_barrier_timer -= 1
+                if buy_barrier_timer == -1:
+                    self.update_buy_barrier_by_timer()
+                    buy_barrier_timer = int(self.config['buy_barrier_timer'])
+                self.buy_barrier_countdown_timer = buy_barrier_timer
+
+    def update_buy_barrier_by_timer(self):
+        if self.config['buy_barrier_timer_enabled'] == 'on':
+            if not self.database.is_selling():
+                if self.database.read_buy_barrier() > 0 and self.database.read_buy_barrier() <= (float(self.config['max_price'] - self.config['buy_barrier_step_size'])):
+                    current_buy_barrier = self.database.read_buy_barrier()
+                    new_buy_barrier = current_buy_barrier + self.config['buy_barrier_step_size']
+                    self.database.update_buy_barrier(new_buy_barrier)
 
     def trading(self):
         while True:
@@ -353,20 +389,22 @@ class BinanceBot:
             self.output(text="Warning: Testmode is active - orders wont be processed.", telegram=True)
 
         # Start webserver
-        self.webserver_thread = Thread(target=self.webserver.run, daemon=True, name='webserver')
+        self.webserver_thread = threading.Thread(target=self.webserver.run, daemon=True, name='webserver')
         self.webserver_thread.start()
 
         while True:
             time.sleep(1)
+            # This function handles the Buy Barrier Countdown and starts and stops the thread as needed
+            self.check_buy_barrier_timer()
 
             # Restart crashed threads
             if not self.trading_thread.is_alive():
                 self.output(text="binance_bot crashed - restarting thread", telegram=True, log=True)
-                self.trading_thread = Thread(target=self.trading, daemon=True, name='bot')
+                self.trading_thread = threading.Thread(target=self.trading, daemon=True, name='bot')
                 self.trading_thread.start()
 
             if not self.timer_thread.is_alive():
-                self.timer_thread = Thread(target=self.timer, daemon=True, name='timer')
+                self.timer_thread = threading.Thread(target=self.timer, daemon=True, name='timer')
                 self.timer_thread.start()
 
             # Stop program and kill all threads when we stop the bottle webserver

@@ -11,7 +11,7 @@ function loadData(){
             data.buy_barrier
         );
         $('#price').html(
-            data.base_asset_name + " = " + data.base_asset_price + " " + data.quote_asset_name
+            data.base_asset_price + " " + data.quote_asset_name
         );
         $('#base_asset_balance').html(
             data.base_asset_balance_precision + " " + data.base_asset_name

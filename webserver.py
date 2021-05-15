@@ -34,7 +34,11 @@ class Webserver:
                                telegram_active=self.bot.database.read_config()[14],
                                telegram_apikey=self.bot.database.read_config()[15],
                                telegram_channel_id=self.bot.database.read_config()[16],
-                               is_selling=self.bot.database.is_selling()
+                               is_selling=self.bot.database.is_selling(),
+                               buy_barrier=self.bot.database.read_buy_barrier(),
+                               buy_barrier_step_size=self.bot.database.read_config()[17],
+                               buy_barrier_timer=self.bot.database.read_config()[18],
+                               buy_barrier_timer_enabled=self.bot.database.read_config()[19]
                                )
 
     def saveconfig(self):
@@ -55,10 +59,19 @@ class Webserver:
         telegram_active = bottle.request.forms.get('telegram_active')
         telegram_apikey = bottle.request.forms.get('telegram_apikey')
         telegram_channel_id = bottle.request.forms.get('telegram_channel_id')
+        buy_barrier = bottle.request.forms.get('buy_barrier')
+        buy_barrier_step_size = bottle.request.forms.get('buy_barrier_step_size')
+        buy_barrier_timer = bottle.request.forms.get('buy_barrier_timer')
+        buy_barrier_timer_enabled = bottle.request.forms.get('buy_barrier_timer_enabled')
 
-        self.bot.database.write_config(pair, base_asset, quote_asset, change_limit, minimum_profit, take_profit, max_price,
-                              redcandle_size, timer, buy_trigger, sell_trigger, testmode, binance_apikey,
-                              binance_apikey_secret, telegram_active, telegram_apikey, telegram_channel_id)
+        self.bot.database.write_config(pair, base_asset, quote_asset, change_limit, minimum_profit, take_profit,
+                                       max_price, redcandle_size, timer, buy_trigger, sell_trigger, testmode,
+                                       binance_apikey, binance_apikey_secret, telegram_active, telegram_apikey,
+                                       telegram_channel_id, buy_barrier_step_size, buy_barrier_timer,
+                                       buy_barrier_timer_enabled)
+
+        if buy_barrier:
+            self.bot.database.update_buy_barrier(buy_barrier)
 
         return bottle.template('saveconfig',
                                msg="Config saved successfully",

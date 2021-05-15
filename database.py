@@ -44,7 +44,10 @@ sql_config_table = """ CREATE TABLE IF NOT EXISTS config (
                                         binance_apikey_secret string,
                                         telegram_active string,
                                         telegram_apikey string,
-                                        telegram_channel_id string
+                                        telegram_channel_id string,
+                                        buy_barrier_step_size float,
+                                        buy_barrier_timer int,
+                                        buy_barrier_timer_enabled string
                                     ); """
 
 
@@ -82,10 +85,11 @@ class DatabaseManager:
                 setup_config_data = """INSERT INTO 'config'
                                               ('pair', 'base_asset', 'quote_asset', 'change_limit', 'minimum_profit',
                                               'take_profit', 'max_price', 'redcandle_size', 'timer', 'buy_trigger',
-                                              'sell_trigger', 'testmode', 'telegram_active') 
-                                              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"""
+                                              'sell_trigger', 'testmode', 'telegram_active', 'buy_barrier_step_size',
+                                              'buy_barrier_timer', 'buy_barrier_timer_enabled')
+                                              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"""
 
-                init_data = ('ADAUSDT', 'ADA', 'USDT', 0.001, 0.02, 0.04, 1.9, 0.04, 10, 3, 3, "on", "off")
+                init_data = ('ADAUSDT', 'ADA', 'USDT', 0.001, 0.02, 0.04, 1.9, 0.04, 10, 3, 3, "on", "off", '0.01', '3000', 'off')
                 cursor.execute(setup_config_data, init_data)
                 db.commit()
 
@@ -283,7 +287,8 @@ class DatabaseManager:
 
     def write_config(self, pair, base_asset, quote_asset, change_limit, minimum_profit, take_profit, max_price,
                      redcandle_size, timer, buy_trigger, sell_trigger, testmode, binance_apikey, binance_apikey_secret,
-                     telegram_active, telegram_apikey, telegram_channel_id):
+                     telegram_active, telegram_apikey, telegram_channel_id, buy_barrier_step_size, buy_barrier_timer,
+                     buy_barrier_timer_enabled):
         """ Write buy data """
         db = sqlite3.connect(r"binance_bot.sqlite")
         try:
@@ -309,6 +314,11 @@ class DatabaseManager:
             cursor.execute('''UPDATE config SET telegram_active = ?''', (telegram_active,))
             cursor.execute('''UPDATE config SET telegram_apikey = ?''', (telegram_apikey,))
             cursor.execute('''UPDATE config SET telegram_channel_id = ?''', (telegram_channel_id,))
+            cursor.execute('''UPDATE config SET buy_barrier_step_size = ?''', (buy_barrier_step_size,))
+            cursor.execute('''UPDATE config SET buy_barrier_timer = ?''', (buy_barrier_timer,))
+            if not buy_barrier_timer_enabled:
+                buy_barrier_timer_enabled = 'off'
+            cursor.execute('''UPDATE config SET buy_barrier_timer_enabled = ?''', (buy_barrier_timer_enabled,))
 
             db.commit()
 

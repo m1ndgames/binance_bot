@@ -104,7 +104,29 @@
     %else:
         <input type="checkbox" id="testmode" name="testmode" value="on"><br>
     %end
-    </div> </div>
+    </div>
+%if buy_barrier:
+<div class="grid-item">
+    <label for="buy_barrier">Buy Barrier:</label><br>
+        <input type="text" id="buy_barrier" name="buy_barrier" value="{{buy_barrier}}"><br>
+    </div>
+%end
+<div class="grid-item">
+    <label for="buy_barrier_step_size">Buy Barrier step size:</label><br>
+    <input type="text" id="buy_barrier_step_size" name="buy_barrier_step_size" value="{{buy_barrier_step_size}}"><br>
+    </div>
+<div class="grid-item">
+    <label for="buy_barrier_timer">Buy Barrier Timer:</label><br>
+    <input type="text" id="buy_barrier_timer" name="buy_barrier_timer" value="{{buy_barrier_timer}}"><br>
+    </div>
+<div class="grid-item">
+    <label for="buy_barrier_timer_enabled">Buy Barrier Timer Active:</label><br>
+    %if buy_barrier_timer_enabled == 'on':
+        <input type="checkbox" id="buy_barrier_timer_enabled" name="buy_barrier_timer_enabled" value="on" checked><br>
+    %else:
+        <input type="checkbox" id="buy_barrier_timer_enabled" name="buy_barrier_timer_enabled" value="on"><br>
+    %end
+    </div></div>
     <div class="grid-container">
    <div class="formSeperator"> <h2>Binance API Settings</h2> </div>
 <div class="grid-item"></div>
