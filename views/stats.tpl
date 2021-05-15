@@ -5,8 +5,8 @@
 %if orders:
 <script type="application/javascript" src="/static/tablefilter/tablefilter.js"></script>
 
-<table id="statsTable">
-    <thead >
+<table id="statsTable" style="width:100%">
+    <thead style="width:100%">
         <tr class="sorter-false">
             <td>Action</td>
             <td>Trading Pair</td>
@@ -100,9 +100,9 @@
         col_2: 'select',
         col_3: 'select',
         col_widths: [
-            "100px", "120px", "100px",
-            "100px", "120px", "120px",
-            "200px"
+            "10%", "12%", "10%",
+            "10%", "12%", "12%",
+            "20%"
         ],
         col_types: [
             'string', 'string', 'string',

@@ -19,7 +19,7 @@
 <div class="logo">
 <div class="logoContent">
 <h1>Binance</h1>
- <img src="../img/binance-bot_final.png" alt="Binance Bot"  height="200">
+ <img src="../img/binance-bot_logo.png" alt="Binance Bot"  height="200">
  <h1>Bot</h1>
 </div>
 </div>

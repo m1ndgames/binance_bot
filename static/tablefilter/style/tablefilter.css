@@ -9,11 +9,12 @@
 
 .even {
   /*  background-color: #fff;*/
-  background-color: rgba(0, 0, 0, 0.3);
+
   width: 1600px;
 }
 
 .odd {
+background-color: rgba(255, 255,255, 0.2);
    /* background-color: #f9f9f9;*/
     width: 1600px; }
 
@@ -206,7 +207,7 @@ select[multiple="multiple"].ezSelectEditor {
 .flt,
 .flt_s,
 .single_flt {
-    font-family: inherit;
+
     font-size: inherit;
     color: #444;
     background-color: #fff;
@@ -367,7 +368,7 @@ div.grd_headTblCont {
 div.grd_tblCont table,
 div.grd_headTblCont table {
     border-collapse: collapse;
-    table-layout: fixed;
+
     box-sizing: initial;
 }
 
@@ -398,7 +399,7 @@ div.grd_tblCont table td {
     clear: both;
     width: 1600px;
     height: 35px;
-    background-color: #c8e0fb;
+    background-color: #e45b00;
     margin: 0;
     padding: 1px 3px 1px 3px;
 

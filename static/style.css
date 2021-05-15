@@ -1,5 +1,6 @@
 html {
-    background-image: url("../img/tile_background.png");
+    background-image: url("../img/binance-bot-pattern.jpg");
+    background-repeat: repeat;
     background-color: green;
 }
 body {
@@ -14,7 +15,7 @@ body {
 .logo h1 {
     font-family: 'Wallpoet', cursive;
     font-size: 120px;
-    color: #86c232;
+    color: #6ba717;
     float:left;
     height:80px;
 }
@@ -26,7 +27,6 @@ body {
 .logo {
     margin: 0 auto;
     clear: both;
-    width: 100%;
     background: linear-gradient(to top, rgba(0,0,0,0.7),  rgba(0,0,0,0));
     min-height:240px;
     padding-top: 10px;
@@ -34,12 +34,14 @@ body {
 
 .logoContent {
     margin: 0 auto;
-    width: 80%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .navigation {
     width: 100%;
-    background-color: #547525c4;
+    background-color: #6ba717;
     min-height: 48px;
     font-size: 32px;
     text-align: center;
@@ -106,7 +108,7 @@ body {
 
 /*INDEX & STATS*/
 .content {
-    min-height: 500px;
+    min-height: 20%;
     background: linear-gradient(to bottom, rgba(0,0,0,0.7),  rgba(0,0,0,0));
     border: solid 1px #ff6804;
     padding: 10px;
@@ -141,10 +143,34 @@ body {
     padding-top: 10px;
 }
 
+.grid-container-api {
+    display: grid;
+    grid-template-columns: 50%  50% ;
+    grid-column-gap: 10px;
+}
+
+.grid-item-api {
+    text-align: center;
+    min-height: 40px;
+    padding-top: 10px;
+}
+
+.grid-container-tele {
+    display: grid;
+    grid-template-columns: 20%  60% 20% ;
+    grid-column-gap: 0px;
+}
+
+.grid-item-tele {
+    text-align: center;
+    min-height: 40px;
+    padding-top: 10px;
+}
+
 .formWrapper input[type=submit] {
     width: 100%;
     min-height: 40px;
-    background-color: #86c232;
+    background-color: #6ba717;;
     border: none;
     color: white;
     text-decoration: none;
@@ -153,10 +179,20 @@ body {
     text-align: center;
 }
 
+
+
 input {
     width: 50%;
     border: solid 1px #86c232;
+    min-height: 22px;
+    margin-top: 4px;
 }
+
+.grid-item-api input {
+    width: 80%;
+}
+
+
 
 .formSeperator h2 {
     border-bottom: solid 1px #ff6804;
@@ -178,7 +214,7 @@ input {
 /*FOOTER*/
 .footer {
     width: 100%;
-    background-color: #ca50005e;
+    background-color: #e45b00;
     min-height: 32px;
     font-size: 18px;
     text-align: center;
@@ -217,20 +253,24 @@ input {
 /* head and body tables */
 .grd-head-cont table, .grd-cont table {
     border-collapse: collapse;
+    width: 100%;
 }
+.grd-head-cont table{
+    width: 100%;
+    }
 
 .grd-head-cont tr:nth-child(even) {
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: rgba(255,255, 255, 0.5);
 }
 
 /* bottom toolbar override */
 .grd-main-cont > .grd_inf {
-    background-color: rgba(97, 137, 47, 0.5);
+    background-color: #6ba717;
     width: 100%;
 }
 
 .grd-cont  tr:hover {
-    background-color: rgba(97, 137, 47, 0.7);
+    background-color: #e45b00;
     color: #fffff;
 }
 
@@ -241,4 +281,15 @@ td {
 td img {
     height: 0px;
     width: 0px;
+}
+thead {
+    background-color: #6ba717;
+    width: 100%;
+}
+table {
+
+    width: 100%;
+}
+.sorter-false{
+    height:38px;
 }

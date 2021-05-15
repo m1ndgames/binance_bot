@@ -128,10 +128,10 @@
     %end
     </div></div>
     <div class="grid-container">
-   <div class="formSeperator"> <h2>Binance API Settings</h2> </div>
-<div class="grid-item"></div>
-    <div class="grid-item"></div><div class="grid-item"></div>
-<div class="grid-item">
+   <div class="formSeperator"> <h2>Binance API Settings</h2> </div> </div>
+   <div class="grid-container-api">
+
+<div class="grid-item-api">
     <label for="binance_apikey">API key:</label><br>
     %if binance_apikey:
         <input type="text" id="binance_apikey" name="binance_apikey" value="{{binance_apikey}}"><br>
@@ -139,7 +139,7 @@
         <input type="text" id="binance_apikey" name="binance_apikey"><br>
     %end
     </div>
-<div class="grid-item">
+<div class="grid-item-api">
     <label for="binance_apikey_secret">API key secret:</label><br>
     %if binance_apikey_secret:
         <input type="text" id="binance_apikey_secret" name="binance_apikey_secret" value="{{binance_apikey_secret}}"><br>
@@ -147,15 +147,13 @@
         <input type="text" id="binance_apikey_secret" name="binance_apikey_secret"><br>
     %end
     </div>
-    <div class="grid-item"></div>
-    <div class="grid-item"></div>
+
     </div>
     <div class="grid-container">
-   <div class="formSeperator"> <h2>Telegram Settings</h2></div>
-   <div class="grid-item"></div>
-   <div class="grid-item"></div>
-   <div class="grid-item"></div>
-<div class="grid-item">
+   <div class="formSeperator"> <h2>Telegram Settings</h2></div></div>
+   <div class="grid-container-tele">
+
+<div class="grid-item-tele">
     <label for="telegram_active">Active:</label><br>
     %if telegram_active == 'on':
         <input type="checkbox" id="telegram_active" name="telegram_active" value="on" checked><br>
@@ -163,7 +161,7 @@
         <input type="checkbox" id="telegram_active" name="telegram_active" value="on"><br>
     %end
     </div>
-<div class="grid-item">
+<div class="grid-item-tele">
     <label for="telegram_apikey">API key:</label><br>
     %if telegram_apikey:
         <input type="text" id="telegram_apikey" name="telegram_apikey" value="{{telegram_apikey}}"><br>
@@ -171,7 +169,7 @@
         <input type="text" id="telegram_apikey" name="telegram_apikey"><br>
     %end
     </div>
-<div class="grid-item">
+<div class="grid-item-tele">
     <label for="telegram_channel_id">Channel ID:</label><br>
     %if telegram_channel_id:
         <input type="text" id="telegram_channel_id" name="telegram_channel_id" value="{{telegram_channel_id}}"><br>
