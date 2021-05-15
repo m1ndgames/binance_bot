@@ -2,8 +2,10 @@
 <html>
 <head>
 <title>Binance Bot - {{title}}</title>
-<meta charset="UTF-8">
-
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
 <script src="https://code.jquery.com/jquery-1.11.3.js"></script>
 <script src="/static/get_data.js"></script>
 <link rel="stylesheet" type="text/css" href="/static/style.css"/>

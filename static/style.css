@@ -39,7 +39,7 @@ body {
 
 .navigation {
     width: 100%;
-    background-color: #86c232;
+    background-color: #547525c4;
     min-height: 48px;
     font-size: 32px;
     text-align: center;
@@ -111,7 +111,7 @@ body {
     border: solid 1px #ff6804;
     padding: 10px;
     margin: 0 auto;
-    width: 50%;
+    width: 60%;
 }
 
 .headlineSeperator h2 {
@@ -178,7 +178,7 @@ input {
 /*FOOTER*/
 .footer {
     width: 100%;
-    background-color: #ff6804;
+    background-color: #ca50005e;
     min-height: 32px;
     font-size: 18px;
     text-align: center;
@@ -197,4 +197,48 @@ input {
 .footer .material-icons {
     font-size: 36px;
     vertical-align: middle;
+}
+
+/*TABLEFILTER*/
+.grd-cont {
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+
+/* cell */
+.grd-cont td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 16px;
+    height: 35px;
+    width: 100%;
+}
+
+/* head and body tables */
+.grd-head-cont table, .grd-cont table {
+    border-collapse: collapse;
+}
+
+.grd-head-cont tr:nth-child(even) {
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+/* bottom toolbar override */
+.grd-main-cont > .grd_inf {
+    background-color: rgba(97, 137, 47, 0.5);
+    width: 100%;
+}
+
+.grd-cont  tr:hover {
+    background-color: rgba(97, 137, 47, 0.7);
+    color: #fffff;
+}
+
+td {
+    text-align: center;
+}
+
+td img {
+    height: 0px;
+    width: 0px;
 }

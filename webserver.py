@@ -126,7 +126,7 @@ class Webserver:
         bottle.route("/config")(web.config)
         bottle.route("/saveconfig", method='POST')(web.saveconfig)
         bottle.route("/stats")(web.stats)
-        bottle.route("/static/<filename>")(web.serve_static)
+        bottle.route("/static/<filename:path>")(web.serve_static)
         bottle.route("/img/<filename>")(web.serve_img)
         bottle.route("/api/<path>")(web.api)
 
