@@ -87,6 +87,13 @@ class Webserver:
                                is_selling=self.bot.database.is_selling()
                                )
 
+    def graph(self):
+        return bottle.template('graph',
+                               pair=self.bot.config['pair'],
+                               countdown=self.bot.countdown_timer,
+                               is_selling=self.bot.database.is_selling()
+                               )
+
     def api(self, path=None):
         if path == "asset_data":
             return json.dumps({'countdown_timer': self.bot.countdown_timer,
@@ -139,6 +146,7 @@ class Webserver:
         bottle.route("/config")(web.config)
         bottle.route("/saveconfig", method='POST')(web.saveconfig)
         bottle.route("/stats")(web.stats)
+        bottle.route("/graph")(web.graph)
         bottle.route("/static/<filename:path>")(web.serve_static)
         bottle.route("/img/<filename>")(web.serve_img)
         bottle.route("/api/<path>")(web.api)

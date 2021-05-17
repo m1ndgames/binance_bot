@@ -28,6 +28,7 @@
 <div class="navigation">
 <a href="/"><span class="material-icons"> home</span> Home</a> -
 <a href="/config"><span class="material-icons">settings</span> Config</a> -
+<a href="/graph"><span class="material-icons">analytics</span> Graph</a>
 <a href="/stats"><span class="material-icons">trending_up</span> Stats</a>
 </div>
 
