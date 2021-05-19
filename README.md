@@ -72,6 +72,9 @@ The bot relies on buy data to define the sell price. This means that you should 
 the configured crypto currency on the exchange. Else it will potentially buy more using available funds, and then work
 with any crypto currency available - defining the sell price for this asset as it has recorded himself.
 
+### Contact
+Discord Channel: https://discord.gg/wnjqHnJeU3
+
 ### Donations
 If you like my work and want to send me some coins along, please use this ADA address:
 ``addr1q8rt5wfhnuqtq74h5e9979nrz3rjsp9wdn7sdu5qhr992pcg7ts5v7g4suczxcku4385nm546hwaag853pm4ykf07ghqeakkk0``
