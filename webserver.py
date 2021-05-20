@@ -9,12 +9,30 @@ class Webserver:
 
     # Define Sites
     def home(self):
+        if self.bot.config['binance_apikey']:
+            binance_active = True
+            current_price = self.bot.get_price()
+        else:
+            binance_active = False
+            current_price = 0
+
         return bottle.template('home',
                                countdown=self.bot.countdown_timer,
-                               is_selling=self.bot.database.is_selling()
+                               is_selling=self.bot.database.is_selling(),
+                               current_price=current_price,
+                               base_asset=self.bot.database.read_config()[1],
+                               quote_asset=self.bot.database.read_config()[2],
+                               binance_active=binance_active
                                )
 
     def config(self):
+        if self.bot.config['binance_apikey']:
+            binance_active = True
+            current_price = self.bot.get_price()
+        else:
+            binance_active = False
+            current_price = 0
+            
         return bottle.template('config',
                                countdown=self.bot.countdown_timer,
                                pair=self.bot.database.read_config()[0],
@@ -38,10 +56,19 @@ class Webserver:
                                buy_barrier=self.bot.database.read_buy_barrier(),
                                buy_barrier_step_size=self.bot.database.read_config()[17],
                                buy_barrier_timer=self.bot.database.read_config()[18],
-                               buy_barrier_timer_enabled=self.bot.database.read_config()[19]
+                               buy_barrier_timer_enabled=self.bot.database.read_config()[19],
+                               current_price=current_price,
+                               binance_active=binance_active
                                )
 
     def saveconfig(self):
+        if self.bot.config['binance_apikey']:
+            binance_active = True
+            current_price = self.bot.get_price()
+        else:
+            binance_active = False
+            current_price = 0
+        
         pair = bottle.request.forms.get('pair')
         base_asset = bottle.request.forms.get('base_asset')
         quote_asset = bottle.request.forms.get('quote_asset')
@@ -76,22 +103,48 @@ class Webserver:
         return bottle.template('saveconfig',
                                msg="Config saved successfully",
                                countdown=self.bot.countdown_timer,
-                               is_selling=self.bot.database.is_selling()
+                               is_selling=self.bot.database.is_selling(),
+                               current_price=current_price,
+                               base_asset=self.bot.database.read_config()[1],
+                               quote_asset=self.bot.database.read_config()[2],
+                               binance_active=binance_active
                                )
 
     def stats(self):
+        if self.bot.config['binance_apikey']:
+            binance_active = True
+            current_price = self.bot.get_price()
+        else:
+            binance_active = False
+            current_price = 0
+            
         orders = self.bot.database.read_all_orders()
         return bottle.template('stats',
                                orders=orders,
                                countdown=self.bot.countdown_timer,
-                               is_selling=self.bot.database.is_selling()
+                               is_selling=self.bot.database.is_selling(),
+                               current_price=current_price,
+                               base_asset=self.bot.database.read_config()[1],
+                               quote_asset=self.bot.database.read_config()[2],
+                               binance_active=binance_active
                                )
 
     def graph(self):
+        if self.bot.config['binance_apikey']:
+            binance_active = True
+            current_price = self.bot.get_price()
+        else:
+            binance_active = False
+            current_price = 0
+            
         return bottle.template('graph',
                                pair=self.bot.config['pair'],
                                countdown=self.bot.countdown_timer,
-                               is_selling=self.bot.database.is_selling()
+                               is_selling=self.bot.database.is_selling(),
+                               current_price=current_price,
+                               base_asset=self.bot.database.read_config()[1],
+                               quote_asset=self.bot.database.read_config()[2],
+                               binance_active=binance_active
                                )
 
     def api(self, path=None):

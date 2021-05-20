@@ -1,7 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Binance Bot - {{title}}</title>
+<title>Binance Bot - {{title}}
+    %if binance_active:
+    - {{base_asset}} = {{current_price}} {{quote_asset}}</title>
+    %else:
+    </title>
+    %end
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <meta http-equiv="Pragma" content="no-cache" />
