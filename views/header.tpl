@@ -18,6 +18,62 @@
 
 </head>
 <body>
+<!-- TradingView Widget BEGIN -->
+<div class="tradingview-widget-container">
+  <div class="tradingview-widget-container__widget"></div>
+  <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-tickers.js" async>
+  {
+  "symbols": [
+    {
+      "description": "",
+      "proName": "BINANCE:BTCUSDT"
+    },
+    {
+      "description": "",
+      "proName": "BINANCE:ETHUSDT"
+    },
+    {
+      "description": "",
+      "proName": "BINANCE:BNBUSDT"
+    },
+    {
+      "description": "",
+      "proName": "BINANCE:XRPUSDT"
+    },
+    {
+      "description": "",
+      "proName": "BINANCE:ADAUSDT"
+    },
+    {
+      "description": "",
+      "proName": "BINANCE:DOTUSDT"
+    },
+    {
+      "description": "",
+      "proName": "BINANCE:ICPUSDT"
+    },
+    {
+      "description": "",
+      "proName": "BINANCE:BCHUSDT"
+    },
+    {
+      "description": "",
+      "proName": "BINANCE:LTCUSDT"
+    },
+    {
+      "description": "",
+      "proName": "BINANCE:DOGEUSDT"
+    }
+  ],
+  "colorTheme": "dark",
+  "isTransparent": false,
+  "showSymbolLogo": false,
+  "locale": "en"
+}
+  </script>
+</div>
+<!-- TradingView Widget END -->
+
 <div class="logo">
 <div class="logoContent">
 <h1>Binance</h1>
@@ -28,7 +84,7 @@
 <div class="navigation">
 <a href="/"><span class="material-icons"> home</span> Home</a> -
 <a href="/config"><span class="material-icons">settings</span> Config</a> -
-<a href="/graph"><span class="material-icons">analytics</span> Graph</a>
+<a href="/graph"><span class="material-icons">analytics</span> Graph</a> -
 <a href="/stats"><span class="material-icons">trending_up</span> Stats</a>
 </div>
 
@@ -61,4 +117,5 @@
 %end
 <div class="tickerItem"><div class="title">Base Asset change:</div> <div class="value"  id='base_asset_change'></div></div>
 <br>
-</div></div>
+</div>
+</div>
