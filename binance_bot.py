@@ -285,7 +285,7 @@ class BinanceBot:
                     current_buy_barrier = self.database.read_buy_barrier()
                     new_buy_barrier = current_buy_barrier + self.config['buy_barrier_step_size']
                     self.database.update_buy_barrier(new_buy_barrier)
-                    self.output(text="Buy Barrier has been increased by " + self.config['buy_barrier_step_size'] + " from " + current_buy_barrier + " to " + new_buy_barrier, telegram=False, log=True)
+                    self.output(text="Buy Barrier has been increased by " + str(self.config['buy_barrier_step_size']) + " from " + str(current_buy_barrier) + " to " + str(new_buy_barrier), telegram=False, log=True)
 
     def trading(self):
         while True:
