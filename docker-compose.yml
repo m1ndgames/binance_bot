@@ -1,9 +1,6 @@
-version: "3.8"
-
 services:
   binance-bot:
-    build: .
-    image: binance-bot:latest
+    image: ghcr.io/m1ndgames/binance_bot:latest
     container_name: binance-bot
     ports:
       - "5311:5311"
