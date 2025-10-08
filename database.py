@@ -1,5 +1,6 @@
 import datetime
 import sqlite3
+import os
 from datetime import datetime
 
 sql_buy_table = """ CREATE TABLE IF NOT EXISTS buy_history (
@@ -54,10 +55,18 @@ sql_config_table = """ CREATE TABLE IF NOT EXISTS config (
 class DatabaseManager:
     def __init__(self, bot):
         self.bot = bot
+        # Determine database path
+        # Priority: DB_PATH env var; else DATA_DIR/binance_bot.sqlite; else ./binance_bot.sqlite
+        db_path_env = os.getenv('DB_PATH')
+        if db_path_env and db_path_env.strip():
+            self.db_path = db_path_env
+        else:
+            data_dir = os.getenv('DATA_DIR', '.')
+            self.db_path = os.path.join(data_dir, 'binance_bot.sqlite')
 
     def setup_database(self):
         """ create a database connection to a SQLite database """
-        db = sqlite3.connect(r"binance_bot.sqlite")
+        db = sqlite3.connect(self.db_path)
         try:
             print("Connected to sqlite db v." + str(sqlite3.version))
             self.create_table(db, sql_buy_table)
@@ -113,7 +122,7 @@ class DatabaseManager:
 
     def write_sell_data(self, pair: str, base_asset: str, quote_asset: str, price: float, total: float):
         """ Write sell data """
-        db = sqlite3.connect(r"binance_bot.sqlite")
+        db = sqlite3.connect(self.db_path)
         try:
             cursor = db.cursor()
             sqlite_insert_with_param = """INSERT INTO 'sell_history'
@@ -135,7 +144,7 @@ class DatabaseManager:
 
     def write_buy_data(self, pair: str, base_asset: str, quote_asset: str, price: float, total: float):
         """ Write buy data """
-        db = sqlite3.connect(r"binance_bot.sqlite")
+        db = sqlite3.connect(self.db_path)
         try:
             cursor = db.cursor()
             sqlite_insert_with_param = """INSERT INTO 'buy_history'
@@ -155,7 +164,7 @@ class DatabaseManager:
             db.close()
 
     def update_sell_state(self, state: int = 0):
-        db = sqlite3.connect(r"binance_bot.sqlite")
+        db = sqlite3.connect(self.db_path)
         try:
             cursor = db.cursor()
             cursor.execute('''UPDATE state SET sell_active = ?''', (state,))
@@ -165,7 +174,7 @@ class DatabaseManager:
             print(e)
 
     def update_buy_barrier(self, buy_barrier: float = 0):
-        db = sqlite3.connect(r"binance_bot.sqlite")
+        db = sqlite3.connect(self.db_path)
         try:
             cursor = db.cursor()
             cursor.execute('''UPDATE state SET buy_barrier = ?''', (buy_barrier,))
@@ -176,7 +185,7 @@ class DatabaseManager:
 
     def read_all_orders(self, base_asset=None):
         """ create a database connection to a SQLite database """
-        db = sqlite3.connect(r"binance_bot.sqlite")
+        db = sqlite3.connect(self.db_path)
         unsorted_orders = []
         try:
             cursor = db.cursor()
@@ -230,7 +239,7 @@ class DatabaseManager:
 
     def read_last_sell_order_price(self):
         """ create a database connection to a SQLite database """
-        db = sqlite3.connect(r"binance_bot.sqlite")
+        db = sqlite3.connect(self.db_path)
         last_sell_price = None
         try:
             cursor = db.cursor()
@@ -249,7 +258,7 @@ class DatabaseManager:
 
     def read_last_buy_order_price(self):
         """ create a database connection to a SQLite database """
-        db = sqlite3.connect(r"binance_bot.sqlite")
+        db = sqlite3.connect(self.db_path)
         last_buy_price = None
         try:
             cursor = db.cursor()
@@ -268,7 +277,7 @@ class DatabaseManager:
 
     def read_config(self):
         """ create a database connection to a SQLite database """
-        db = sqlite3.connect(r"binance_bot.sqlite")
+        db = sqlite3.connect(self.db_path)
         config_data = None
         try:
             cursor = db.cursor()
@@ -290,7 +299,7 @@ class DatabaseManager:
                      telegram_active, telegram_apikey, telegram_channel_id, buy_barrier_step_size, buy_barrier_timer,
                      buy_barrier_timer_enabled):
         """ Write buy data """
-        db = sqlite3.connect(r"binance_bot.sqlite")
+        db = sqlite3.connect(self.db_path)
         try:
             cursor = db.cursor()
             cursor.execute('''UPDATE config SET pair = ?''', (pair,))
@@ -329,7 +338,7 @@ class DatabaseManager:
 
     def read_buy_barrier(self):
         """ create a database connection to a SQLite database """
-        db = sqlite3.connect(r"binance_bot.sqlite")
+        db = sqlite3.connect(self.db_path)
         buy_barrier = None
         try:
             cursor = db.cursor()
@@ -349,7 +358,7 @@ class DatabaseManager:
 
     def is_selling(self):
         """ create a database connection to a SQLite database """
-        db = sqlite3.connect(r"binance_bot.sqlite")
+        db = sqlite3.connect(self.db_path)
         sell_state = None
         try:
             cursor = db.cursor()

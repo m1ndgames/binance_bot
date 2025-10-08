@@ -1,5 +1,6 @@
 import bottle
 import json
+import os
 from bottle import static_file
 
 
@@ -205,4 +206,5 @@ class Webserver:
         bottle.route("/api/<path>")(web.api)
 
         # Start Webserver
-        bottle.run(server='wsgiref', host='127.0.0.1', port=5311, quiet=True)
+        host = os.getenv('WEB_HOST', '127.0.0.1')
+        bottle.run(server='wsgiref', host=host, port=5311, quiet=True)

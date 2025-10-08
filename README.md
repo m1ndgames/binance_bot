@@ -78,3 +78,86 @@ Discord Channel: https://discord.gg/wnjqHnJeU3
 ### Donations
 If you like my work and want to send me some coins along, please use this ADA address:
 ``addr1q8rt5wfhnuqtq74h5e9979nrz3rjsp9wdn7sdu5qhr992pcg7ts5v7g4suczxcku4385nm546hwaag853pm4ykf07ghqeakkk0``
+
+
+---
+
+### Docker
+
+Run the bot in a Docker container.
+
+Build locally:
+
+```
+docker build -t binance-bot:latest .
+```
+
+Run it (web UI on http://localhost:5311/config):
+
+```
+docker run --name binance-bot \
+  -p 5311:5311 \
+  --restart unless-stopped \
+  -d binance-bot:latest
+```
+
+Using Docker Compose (recommended):
+
+```
+docker compose up -d --build
+```
+
+Notes:
+- Web UI bind address is configurable via WEB_HOST (default: 127.0.0.1). In Docker/Compose we set WEB_HOST=0.0.0.0 so it is reachable via the mapped port on your host.
+- SQLite database persistence: the app uses DB_PATH if set, otherwise DATA_DIR/binance_bot.sqlite, otherwise ./binance_bot.sqlite. The provided docker-compose mounts a named volume at /data and sets DB_PATH=/data/binance_bot.sqlite so your data persists across container recreations.
+
+Configuration via environment variables:
+- WEB_HOST: Address the Bottle server binds to. Default: 127.0.0.1 (safe for non-Docker/local use). Set to 0.0.0.0 in containers.
+- DB_PATH: Full path to the SQLite database file. Example: /data/binance_bot.sqlite.
+- DATA_DIR: Alternative to DB_PATH; if DB_PATH is not set, the DB will be created at DATA_DIR/binance_bot.sqlite.
+
+Run with Docker directly (with a named volume):
+
+```
+docker volume create binance-bot-data
+
+docker run --name binance-bot \
+  -p 5311:5311 \
+  -e WEB_HOST=0.0.0.0 \
+  -e DB_PATH=/data/binance_bot.sqlite \
+  -v binance-bot-data:/data \
+  --restart unless-stopped \
+  -d binance-bot:latest
+```
+
+Bind-mount a host directory instead of a named volume:
+
+```
+docker run --name binance-bot \
+  -p 5311:5311 \
+  -e WEB_HOST=0.0.0.0 \
+  -e DB_PATH=/data/binance_bot.sqlite \
+  -v "$PWD/data":/data \
+  --restart unless-stopped \
+  -d binance-bot:latest
+```
+
+### GitHub Actions (container build)
+A workflow is included at .github/workflows/docker-image.yml which builds and publishes the Docker image to GitHub Container Registry (GHCR) on pushes to the main/master branches and on version tags.
+
+- Image name: ghcr.io/<OWNER>/<REPO>:<tag>
+- The workflow uses the built-in GITHUB_TOKEN; ensure the repository has permission to publish to GHCR.
+- Pull the image:
+
+```
+docker pull ghcr.io/<OWNER>/<REPO>:latest
+```
+
+Run from GHCR image:
+
+```
+docker run --name binance-bot \
+  -p 5311:5311 \
+  --restart unless-stopped \
+  -d ghcr.io/<OWNER>/<REPO>:latest
+```

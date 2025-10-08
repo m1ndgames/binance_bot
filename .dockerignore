@@ -1,0 +1,29 @@
+# Version control
+.git
+.gitignore
+
+# Python cache/venv
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# IDE/editor
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Tests & caches
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Node/web build artifacts (if any)
+node_modules/
+dist/
+build/

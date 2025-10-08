@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  binance-bot:
+    build: .
+    image: binance-bot:latest
+    container_name: binance-bot
+    ports:
+      - "5311:5311"
+    environment:
+      - WEB_HOST=0.0.0.0
+      - DB_PATH=/data/binance_bot.sqlite
+    volumes:
+      - bot-data:/data
+    restart: unless-stopped
+
+volumes:
+  bot-data:
